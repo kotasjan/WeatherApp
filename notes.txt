@@ -1,0 +1,60 @@
+Weather App
+
+Funkcionalities:
+1) Main activity
+	- Hamburger menu with:
+		+ button witch ask for current location and update the city for weather forecast
+		+ manually find the city
+		+ list of previously serched locations
+	- APP bar
+		+ city name for forecast
+	- Card current weather
+		+ temperature
+		+ icon
+		+ summary
+		+ wind speed
+		+ probability of rain
+	- Card with hourly forecast
+		+ probability of rain
+		+ temperature
+	- Card with daily weather
+		+ day
+		+ icon
+		+ min / max temperature
+
+2) Current weather activity
+	- all the forecast details
+		+ summary
+		+ icon
+		+ temperature
+		+ apparental temperature
+		+ probability of rain
+		+ humidity
+		+ pressure
+		+ wind speed
+		+ cloud cover
+		+ UV index
+		+ ozone
+
+3) Notifications
+	- warning of comming rain
+
+4) System broadcast
+	- when is no internet connection
+
+
+------------------------------------
+Tasks for next week (25.3.):
+Jan:
+- GPS
+- Google API to get address
+- SharedPreferences to store 
+
+Piotr S.
+- Layout of main activity
+- Hamburger menu
+
+Piotr P.
+- decide what can we reuse from his app
+- getting data from API
+
