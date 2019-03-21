@@ -1,4 +1,4 @@
-package com.fhv.weatherapp.requester.web
+package com.fhv.weatherapp.service.weatherupdater.web
 
 import android.util.Log
 import com.fhv.weatherapp.model.*
@@ -10,7 +10,8 @@ import java.util.*
 
 private const val TAG = "WeatherJsonParser"
 
-fun parseJsonToWeather(forecast: JSONObject): Weather {
+fun parseJsonToWeather(apiResponse: String): Weather {
+    val forecast = JSONObject(apiResponse)
     val currentWeather = parseCurrent(forecast.getJSONObject("currently"), forecast.getJSONObject("hourly"))
     Log.v(TAG, currentWeather.toString())
 

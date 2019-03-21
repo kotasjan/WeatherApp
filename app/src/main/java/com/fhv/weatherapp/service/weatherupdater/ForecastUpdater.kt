@@ -1,4 +1,4 @@
-package com.fhv.weatherapp.requester.service
+package com.fhv.weatherapp.service.weatherupdater
 
 import android.util.Log
 import androidx.work.*
@@ -10,8 +10,8 @@ object ForecastUpdater {
     fun startInBackground() {
         Log.d(TAG, "Enqueue periodic forecast update in the background")
         val updateRequest = PeriodicWorkRequestBuilder<ForecastUpdateWorker>(15, TimeUnit.MINUTES)
-                .setConstraints(constraints())
                 // todo maybe setInputData() here
+                // or constraints
                 .build()
         WorkManager.getInstance().enqueueUniquePeriodicWork("forecastUpdate", ExistingPeriodicWorkPolicy.KEEP, updateRequest)
     }
@@ -19,16 +19,9 @@ object ForecastUpdater {
     fun updateOnce() {
         Log.d(TAG, "Enqueue one-time forecast update in the background")
         val updateRequest = OneTimeWorkRequestBuilder<ForecastUpdateWorker>()
-                .setConstraints(constraints())
-                // todo maybe setInputData() here
+                // todo same as above
                 .build()
         WorkManager.getInstance().enqueueUniqueWork("forecastUpdate", ExistingWorkPolicy.KEEP, updateRequest)
     }
 
-    private fun constraints(): Constraints {
-        return Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .build()
-    }
 }
