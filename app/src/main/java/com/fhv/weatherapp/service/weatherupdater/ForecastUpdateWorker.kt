@@ -18,8 +18,10 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
         Log.d(TAG, "Start work on update weather")
         return try {
             val apiResponse = forecastRequester.request()
+            Log.d(TAG, "Api response: $apiResponse")
             val weather = parseJsonToWeather(apiResponse)
-            Log.d(TAG, "Successfully retrieved forecast")
+            Log.d(TAG, "Parsed to Weather: $weather")
+            Log.i(TAG, "Successfully retrieved forecast")
             WeatherRepository.putWeather(weather)
             Result.success()
         } catch (e: ForecastRequestException) {

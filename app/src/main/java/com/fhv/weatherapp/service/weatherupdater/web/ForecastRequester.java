@@ -9,8 +9,8 @@ import okhttp3.Response;
 
 public class ForecastRequester {
     private static final String TAG = "ForecastRequester";
-    //    private static final String URL = "https://api.darksky.net/forecast/285d2f7ba2b4c6a886a3356737900fb9/{latitude},{longitude}?units=si&lang={locale}";
-    private static final String URL = "https://api.darksky.net/forecast/285d2f7ba2b4c6a886a3356737900fb9/{latitude},{longitude}?units=si";
+    private static final String URL = "https://api.darksky.net/forecast/285d2f7ba2b4c6a886a3356737900fb9/{latitude},{longitude}?units=si&lang={locale}";
+    private static final String URL_NO_LOCALE = "https://api.darksky.net/forecast/285d2f7ba2b4c6a886a3356737900fb9/{latitude},{longitude}?units=si";
     private final Context context;
 
     public ForecastRequester(final Context context) {
@@ -20,11 +20,11 @@ public class ForecastRequester {
     public String request() throws ForecastRequestException {
         final String latitude = "51.750000";    //fixme - get it from somewhere!
         final String longitude = "19.466670";
-        final String locale = context.getResources().getConfiguration().locale.getCountry().toLowerCase();
+        final String locale = context.getResources().getConfiguration().locale.getLanguage().toLowerCase();
         final String replacedUrl = URL
                 .replace("{latitude}", latitude)
-                .replace("{longitude}", longitude);
-//                .replace("{locale}", locale);
+                .replace("{longitude}", longitude)
+                .replace("{locale}", locale);
         Log.d(TAG, "Update weather http request url:");
         Log.d(TAG, replacedUrl);
 
@@ -33,11 +33,53 @@ public class ForecastRequester {
                 .url(replacedUrl)
                 .get()
                 .build();
+
         try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
+            Log.d(TAG, "Response code " + response.code());
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                final String resp = response.body().string();
+                Log.w(TAG, "Request was not successful");
+                Log.w(TAG, resp);
+
+                if (didNotRecogniseLocale(resp)) {
+                    return retryWithoutLocale(latitude, longitude);
+                } else {
+                    throw new ForecastRequestException(resp);
+                }
+            }
         } catch (Exception e) {
             throw new ForecastRequestException(e);
         }
+    }
 
+    private boolean didNotRecogniseLocale(final String response) {
+        return response.contains("An invalid lang parameter was provided.");
+    }
+
+    private String retryWithoutLocale(final String latitude, final String longitude) throws ForecastRequestException {
+        Log.d(TAG, "Retrying without locale");
+        final String replacedNoLocale = URL_NO_LOCALE
+                .replace("{latitude}", latitude)
+                .replace("{longitude}", longitude);
+        Log.d(TAG, "Update weather http request url:");
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(replacedNoLocale)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            Log.d(TAG, "Request status " + response.code() + " " + response.message());
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new ForecastRequestException(response.body().string());
+            }
+        } catch (Exception e) {
+            throw new ForecastRequestException(e);
+        }
     }
 }
