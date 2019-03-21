@@ -8,7 +8,10 @@ object ForecastUpdater {
     private val TAG = "ForecastUpdater"
 
     fun startInBackground() {
+        cancelAllWork()
+
         Log.d(TAG, "Enqueue periodic forecast update in the background")
+
         val updateRequest = PeriodicWorkRequestBuilder<ForecastUpdateWorker>(15, TimeUnit.MINUTES)
                 // todo maybe setInputData() here
                 // or constraints
@@ -17,11 +20,21 @@ object ForecastUpdater {
     }
 
     fun updateOnce() {
+        cancelAllWork()
+
         Log.d(TAG, "Enqueue one-time forecast update in the background")
+
         val updateRequest = OneTimeWorkRequestBuilder<ForecastUpdateWorker>()
                 // todo same as above
                 .build()
         WorkManager.getInstance().enqueueUniqueWork("forecastUpdate", ExistingWorkPolicy.KEEP, updateRequest)
+
+        startInBackground()
+    }
+
+    fun cancelAllWork() {
+        Log.d(TAG, "Cancelling all work")
+        WorkManager.getInstance().cancelUniqueWork("forecastUpdate")
     }
 
 }
