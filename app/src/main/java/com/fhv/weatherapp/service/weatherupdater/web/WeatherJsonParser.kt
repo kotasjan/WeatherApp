@@ -74,7 +74,7 @@ private fun parseDaily(daily: JSONObject): DailyWeather {
         for (i in 1..DAYS) {           // starting with 1 to skip today
             val entry = data.getJSONObject(i)
             val timestamp = entry.getLong("time")
-            val day = LocalDate.fromDateFields(Date(timestamp))
+            val day = LocalDate.fromDateFields(Date(timestamp * 1000)) // timestamp is in seconds but we need millis
             days.add(DailyWeather.Entry(day,
                     entry.getString("icon"),
                     entry.getDouble("temperatureLow"),
