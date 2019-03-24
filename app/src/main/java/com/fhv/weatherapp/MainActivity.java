@@ -2,9 +2,9 @@ package com.fhv.weatherapp;
 
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
+//import android.support.v4.app.Fragment;
+//import android.support.v4.app.FragmentManager;
+//import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
-        nvDrawer = (NavigationView) findViewById(R.id.nvView);
-        setupDrawerContent(nvDrawer);
+//        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+//        setupDrawerContent(nvDrawer);
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+/*
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -95,5 +95,5 @@ public class MainActivity extends AppCompatActivity {
         setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
-
+*/
 }
