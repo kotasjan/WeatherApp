@@ -29,9 +29,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'joda-time:joda-time:2.10.1'
-    implementation "com.squareup.okhttp3:okhttp:3.12.0"
-    implementation "android.arch.work:work-runtime-ktx:1.0.0"
-
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'android.arch.work:work-runtime-ktx:1.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
 }
 repositories {
     mavenCentral()
