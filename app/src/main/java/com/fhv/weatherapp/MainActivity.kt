@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -54,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         ForecastUpdater.startInBackground()
 
+        //header filled with mock data
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        /*button.setOnClickListener { ForecastUpdater.updateOnce() }
+        /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
 
         ViewModelProviders.of(this)
                 .get(WeatherViewModel::class.java)
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                     info.text = weather.toString()
                 })
 
-        // setting listener for get location button
+        /* setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
         toolbar = findViewById(R.id.toolbar) as Toolbar
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         mDrawer!!.addDrawerListener(drawerToggle)
 
 
-
+        //list filled with mock data
         listView = findViewById(R.id.list) as ListView
         dataModels = ArrayList<SmallWeather>()
         dataModels.add(SmallWeather("Dornbirn", "26", "snow"))
@@ -95,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         listView!!.setAdapter(adapter)
     }
 
+
+    //TODO: move this function somewhere else
     @SuppressLint("SetJavaScriptEnabled")
     private fun prepareIcon(icon: WebView, weatherIconType: String) {
         icon.settings.javaScriptEnabled = true
