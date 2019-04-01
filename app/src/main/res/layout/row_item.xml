@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/black"
+        android:textSize="20dp"/>
+
+
+    <com.thbs.skycons.library.CloudSnowView
+        android:id="@+id/cloud_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="180dp"
+        app:bgColor="#ffffff"
+        app:isStatic="false"
+        app:strokeColor="#000000" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/celcius_degree"
+            android:textSize="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceButton"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</RelativeLayout>

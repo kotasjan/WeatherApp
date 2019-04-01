@@ -1,13 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical" >
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.fhv.weatherapp.MainActivity"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_main">
 
-<ListView
-    android:layout_marginTop="192dp"
-    android:id="@+id/list"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
-</ListView>
+    <ListView
+        android:id="@+id/list"
+        android:paddingTop="192dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
-</LinearLayout>
+</RelativeLayout>
