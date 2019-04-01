@@ -6,15 +6,22 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.*
 import android.location.LocationListener
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.model.CurrentLocation
+import com.fhv.weatherapp.model.SmallWeather
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -27,6 +34,14 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var locationManager: LocationManager
+    private var mDrawer: DrawerLayout? = null
+    private var toolbar: Toolbar? = null
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private var listView: ListView? = null
+    private val cityHeaderName: TextView? = null
+
+    private lateinit var dataModels: ArrayList<SmallWeather>
+    private var adapter: CustomAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         ForecastUpdater.startInBackground()
 
-        button.setOnClickListener { ForecastUpdater.updateOnce() }
+        /*button.setOnClickListener { ForecastUpdater.updateOnce() }
 
         ViewModelProviders.of(this)
                 .get(WeatherViewModel::class.java)
@@ -44,8 +59,74 @@ class MainActivity : AppCompatActivity() {
                 })
 
         // setting listener for get location button
-        btn_get_location.setOnClickListener { getLocationListener() }
+        btn_get_location.setOnClickListener { getLocationListener() }*/
+
+        setContentView(R.layout.activity_main)
+        toolbar = findViewById(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
+        mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        drawerToggle = setupDrawerToggle()
+        mDrawer!!.addDrawerListener(drawerToggle)
+
+
+
+        listView = findViewById(R.id.list) as ListView
+        dataModels = ArrayList<SmallWeather>()
+        dataModels.add(SmallWeather("Dornbirn", "26", "snow"))
+        dataModels.add(SmallWeather("Dornbirn", "25", "snow"))
+        dataModels.add(SmallWeather("Dornbirn", "23", "snow"))
+        dataModels.add(SmallWeather("Dornbirn", "21", "snow"))
+        adapter = CustomAdapter(dataModels, applicationContext)
+        listView!!.setAdapter(adapter)
     }
+
+
+    private fun setupDrawerToggle(): ActionBarDrawerToggle {
+        return ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close)
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        drawerToggle!!.syncState()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        drawerToggle!!.onConfigurationChanged(newConfig)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // check if user allowed to use location services
     private fun getLocationListener() {
