@@ -11,11 +11,16 @@ import android.location.*
 import android.location.LocationListener
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.NavigationView
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -36,9 +41,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationManager: LocationManager
     private var mDrawer: DrawerLayout? = null
     private var toolbar: Toolbar? = null
+    private var navigationView: NavigationView? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var listView: ListView? = null
-    private val cityHeaderName: TextView? = null
 
     private lateinit var dataModels: ArrayList<SmallWeather>
     private var adapter: CustomAdapter? = null
@@ -48,6 +53,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         ForecastUpdater.startInBackground()
+
+        navigationView = findViewById(R.id.nvView) as NavigationView
+        val headerLayout = navigationView!!.getHeaderView(0)
+        val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
+        cityText.setText(R.string.app_name)
+        val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
+        temperatureText.setText("24")
+        val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
+        prepareIcon(iconWeather, "fog")
+
+
 
         /*button.setOnClickListener { ForecastUpdater.updateOnce() }
 
@@ -61,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         // setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
-        setContentView(R.layout.activity_main)
         toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
@@ -73,11 +88,23 @@ class MainActivity : AppCompatActivity() {
         listView = findViewById(R.id.list) as ListView
         dataModels = ArrayList<SmallWeather>()
         dataModels.add(SmallWeather("Dornbirn", "26", "snow"))
-        dataModels.add(SmallWeather("Dornbirn", "25", "snow"))
-        dataModels.add(SmallWeather("Dornbirn", "23", "snow"))
-        dataModels.add(SmallWeather("Dornbirn", "21", "snow"))
+        dataModels.add(SmallWeather("Dornbirn", "25", "rain"))
+        dataModels.add(SmallWeather("Dornbirn", "23", "wind"))
+        dataModels.add(SmallWeather("Dornbirn", "21", "fog"))
         adapter = CustomAdapter(dataModels, applicationContext)
         listView!!.setAdapter(adapter)
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun prepareIcon(icon: WebView, weatherIconType: String) {
+        icon.settings.javaScriptEnabled = true
+        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
+        icon.loadUrl("file:///android_asset/largeWeatherImage.html")
+        icon.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+                view.loadUrl("javascript:set_icon_type('$weatherIconType')")
+            }
+        }
     }
 
 
@@ -87,12 +114,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        drawerToggle!!.syncState()
+        drawerToggle.syncState()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        drawerToggle!!.onConfigurationChanged(newConfig)
+        drawerToggle.onConfigurationChanged(newConfig)
     }
 
 
