@@ -1,6 +1,5 @@
 package com.fhv.weatherapp.common
 
-
 object Common {
 
     internal const val APP_NAME = "WeatherApp"

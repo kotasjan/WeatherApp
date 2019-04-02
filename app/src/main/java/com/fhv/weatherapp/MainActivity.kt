@@ -47,6 +47,13 @@ class MainActivity : AppCompatActivity() {
         btn_get_location.setOnClickListener { getLocationListener() }
     }
 
+    override fun onStop() {
+
+        // TODO save actual state of weather
+
+        super.onStop()
+    }
+
     // check if user allowed to use location services
     private fun getLocationListener() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
