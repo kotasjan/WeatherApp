@@ -13,59 +13,49 @@ object SharedPrefs {
 
     private var prefs: SharedPreferences? = null
 
-    // list of all used cities
-    internal lateinit var cityList: MutableList<City>
-
     // load content of shared preferences to variable
-    private fun initializeSharedPreferences(context: Context) {
+    fun initializeSharedPreferences(context: Context) {
         prefs = context.getSharedPreferences(PREFS_FILE, 0)
+        loadLastCityIndex()
+        loadCityList()
     }
 
-    // get index of the last displayed city
-    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    fun getLastCityIndex(context: Context): Int? {
-        if (prefs == null) initializeSharedPreferences(context)
-
-        return if (prefs != null
+    // load index of the last displayed city
+    private fun loadLastCityIndex() {
+        if (prefs != null
                 && prefs!!.contains(LAST_CITY)
                 && prefs!!.getString(LAST_CITY, null) != null) {
-            prefs!!.getString(LAST_CITY, null).toInt()
-        } else {
-            null
+            Common.lastCityIndex = prefs?.getString(LAST_CITY, "0")!!.toInt()
         }
     }
 
-    // set index value of the currently displayed city
-    fun setLastCityIndex(context: Context, index: Int) {
-        if (prefs == null) initializeSharedPreferences(context)
+    // save index of the last displayed city to shared preferences
+    fun saveLastCityIndex() {
         if (prefs != null) {
             val editor = prefs!!.edit()
-            editor.putString(LAST_CITY, index.toString())
+            editor.putString(LAST_CITY, Common.lastCityIndex.toString())
             editor.apply()
         }
     }
 
-    fun getCityList(context: Context): MutableList<City>? {
-        if (prefs == null) initializeSharedPreferences(context)
+    // load list of the cities from shared preferences
+    private fun loadCityList() {
+        if (Common.cityList.isEmpty()) {
+            if (prefs != null
+                    && prefs!!.contains(CITY_LIST)
+                    && prefs!!.getString(CITY_LIST, null) != null) {
 
-        return if (prefs != null
-                && prefs!!.contains(CITY_LIST)
-                && prefs!!.getString(CITY_LIST, null) != null) {
-
-            val mJson = prefs!!.getString(CITY_LIST, null)
-            Gson().fromJson<MutableList<City>>(mJson, MutableList::class.java)
-
-        } else {
-            null
+                val mJson = prefs!!.getString(CITY_LIST, null)
+                Common.cityList = Gson().fromJson<MutableList<City>>(mJson, MutableList::class.java)
+            }
         }
     }
 
     // save current list of cities to shared prefs
-    fun updateCityList(context: Context) {
-        if (prefs == null) initializeSharedPreferences(context)
+    fun saveCityList() {
         if (prefs != null) {
             val editor = prefs!!.edit()
-            val json = Gson().toJson(cityList)
+            val json = Gson().toJson(Common.cityList)
             editor.putString(CITY_LIST, json)
             editor.apply()
         }

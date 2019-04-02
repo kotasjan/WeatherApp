@@ -24,6 +24,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import com.fhv.weatherapp.common.Common
+import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.CurrentLocation
 import com.fhv.weatherapp.model.SmallWeather
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
@@ -93,6 +94,18 @@ class MainActivity : AppCompatActivity() {
         dataModels.add(SmallWeather("Dornbirn", "21", "fog"))
         adapter = CustomAdapter(dataModels, applicationContext)
         listView!!.setAdapter(adapter)
+
+        // This has to be called always in first/main activity to load previously saved state
+        SharedPrefs.initializeSharedPreferences(this)
+    }
+
+    // This method is called always before activity ends (usually to save activity state)
+    override fun onStop() {
+
+        SharedPrefs.saveCityList()
+        SharedPrefs.saveLastCityIndex()
+
+        super.onStop()
     }
 
 
@@ -126,43 +139,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    override fun onStop() {
-
-        // TODO save actual state of weather
-
-        super.onStop()
-    }
 
     // check if user allowed to use location services
     private fun getLocationListener() {
