@@ -65,14 +65,16 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
+
         /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
 
-        ViewModelProviders.of(this)
+      /*  ViewModelProviders.of(this)
                 .get(WeatherViewModel::class.java)
                 .getWeather()
                 .observe(this, Observer { weather ->
                     info.text = weather.toString()
-                })
+                })*/
 
         /* setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
