@@ -96,7 +96,10 @@ class MainActivity : AppCompatActivity() {
         }
         valueAnimator.start();
 
-
+        val iconWindy = findViewById(R.id.windy_icon) as WebView
+        val iconRainy = findViewById(R.id.rainy_icon) as WebView
+        prepareIcon3(iconWindy, "wind")
+        prepareIcon3(iconRainy, "rain")
 
 
         /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
@@ -144,7 +147,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    //TODO: move this function somewhere else
+    //TODO: move this function somewhere else and connect this functions
     @SuppressLint("SetJavaScriptEnabled")
     private fun prepareIcon(icon: WebView, weatherIconType: String) {
         icon.settings.javaScriptEnabled = true
@@ -162,6 +165,17 @@ class MainActivity : AppCompatActivity() {
         icon.settings.javaScriptEnabled = true
         icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
         icon.loadUrl("file:///android_asset/largeWeatherImage.html")
+        icon.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+                view.loadUrl("javascript:set_icon_type('$weatherIconType')")
+            }
+        }
+    }
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun prepareIcon3(icon: WebView, weatherIconType: String) {
+        icon.settings.javaScriptEnabled = true
+        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
+        icon.loadUrl("file:///android_asset/tinyWeatherImage.html")
         icon.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 view.loadUrl("javascript:set_icon_type('$weatherIconType')")
