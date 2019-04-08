@@ -1,5 +1,6 @@
 package com.fhv.weatherapp
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -18,6 +19,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ListView
@@ -34,6 +38,7 @@ import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
+import javax.xml.validation.Validator
 
 class MainActivity : AppCompatActivity() {
 
@@ -64,6 +69,34 @@ class MainActivity : AppCompatActivity() {
 
 
 
+        //first card view
+
+        val temperatrueMainView = findViewById(R.id.temperature_main_view) as TextView
+        temperatrueMainView.setText("29 C")
+        val iconMainView = findViewById(R.id.icon_main_view) as WebView
+        prepareIcon2(iconMainView, "fog")
+        val summaryMainView = findViewById(R.id.summary_main_view) as TextView
+        summaryMainView.setText("Rain starting later this afternoon, continuing until this evening.")
+        val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
+        summaryMainView2.setText("Rain starting later this afternoon, continuing until this evening.")
+
+
+        val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
+        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.interpolator = LinearInterpolator()
+        valueAnimator.duration = 9000L
+
+        valueAnimator.addUpdateListener{
+            var progress =  it.animatedValue as Float
+            var width = summaryMainView.getWidth()
+            var translationX = width * progress
+            summaryMainView.setTranslationX(-translationX)
+            summaryMainView2.setTranslationX(-(translationX - width))
+
+        }
+        valueAnimator.start();
+
+
 
 
         /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
@@ -79,7 +112,12 @@ class MainActivity : AppCompatActivity() {
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
         toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
         setSupportActionBar(toolbar)
+        toolbarTitle.setText("Current location")
+        getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
+
+
         mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
@@ -109,6 +147,18 @@ class MainActivity : AppCompatActivity() {
     //TODO: move this function somewhere else
     @SuppressLint("SetJavaScriptEnabled")
     private fun prepareIcon(icon: WebView, weatherIconType: String) {
+        icon.settings.javaScriptEnabled = true
+        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
+        icon.loadUrl("file:///android_asset/mediumWeatherImage.html")
+        icon.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView, url: String) {
+                view.loadUrl("javascript:set_icon_type('$weatherIconType')")
+            }
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun prepareIcon2(icon: WebView, weatherIconType: String) {
         icon.settings.javaScriptEnabled = true
         icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
         icon.loadUrl("file:///android_asset/largeWeatherImage.html")
