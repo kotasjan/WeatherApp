@@ -13,13 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fhv.weatherapp.model.SmallWeather;
+import com.fhv.weatherapp.model.City;
 
 import java.util.ArrayList;
 
-public class CustomAdapter extends ArrayAdapter<SmallWeather> {
+public class HeaderListAdapter extends ArrayAdapter<City> {
 
-    private ArrayList<SmallWeather> dataSet;
+    private ArrayList<City> dataSet;
     Context mContext;
 
     private static class ViewHolder {
@@ -28,7 +28,7 @@ public class CustomAdapter extends ArrayAdapter<SmallWeather> {
         WebView icon;
     }
 
-    public CustomAdapter(ArrayList<SmallWeather> data, Context context) {
+    public HeaderListAdapter(ArrayList<City> data, Context context) {
         super(context, R.layout.row_item, data);
         this.dataSet = data;
         this.mContext = context;
@@ -44,7 +44,7 @@ public class CustomAdapter extends ArrayAdapter<SmallWeather> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SmallWeather dataModel = getItem(position);
+        City dataModel = getItem(position);
         ViewHolder viewHolder;
         final View result;
 
@@ -67,9 +67,9 @@ public class CustomAdapter extends ArrayAdapter<SmallWeather> {
         result.startAnimation(animation);
         lastPosition = position;
 
-        viewHolder.txtLocation.setText(dataModel.getLocation());
-        viewHolder.txtDegree.setText(dataModel.getDegree());
-        prepareIcon(viewHolder.icon, dataModel.getType());
+        viewHolder.txtLocation.setText(dataModel.getLocation().getCity());
+        viewHolder.txtDegree.setText(String.valueOf(dataModel.getWeather().getCurrentWeather().getTemperature()));
+        prepareIcon(viewHolder.icon, dataModel.getWeather().getCurrentWeather().getIcon());
         return convertView;
     }
 

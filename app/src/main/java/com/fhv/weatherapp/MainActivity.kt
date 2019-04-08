@@ -26,7 +26,6 @@ import android.widget.Toast
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.CurrentLocation
-import com.fhv.weatherapp.model.SmallWeather
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -45,8 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var listView: ListView? = null
 
-    private lateinit var dataModels: ArrayList<SmallWeather>
-    private var adapter: CustomAdapter? = null
+    private var adapter: HeaderListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,18 +83,15 @@ class MainActivity : AppCompatActivity() {
         mDrawer!!.addDrawerListener(drawerToggle)
 
 
-        //list filled with mock data
-        listView = findViewById(R.id.list) as ListView
-        dataModels = ArrayList<SmallWeather>()
-        dataModels.add(SmallWeather("Dornbirn", "26", "snow"))
-        dataModels.add(SmallWeather("Dornbirn", "25", "rain"))
-        dataModels.add(SmallWeather("Dornbirn", "23", "wind"))
-        dataModels.add(SmallWeather("Dornbirn", "21", "fog"))
-        adapter = CustomAdapter(dataModels, applicationContext)
-        listView!!.setAdapter(adapter)
+
 
         // This has to be called always in first/main activity to load previously saved state
         SharedPrefs.initializeSharedPreferences(this)
+
+
+        listView = findViewById(R.id.list) as ListView
+        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
+        listView!!.setAdapter(adapter)
     }
 
     // This method is called always before activity ends (usually to save activity state)
