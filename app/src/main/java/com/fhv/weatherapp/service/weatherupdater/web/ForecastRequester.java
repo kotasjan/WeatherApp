@@ -3,6 +3,9 @@ package com.fhv.weatherapp.service.weatherupdater.web;
 import android.content.Context;
 import android.util.Log;
 
+import com.fhv.weatherapp.common.Common;
+import com.fhv.weatherapp.model.City;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -18,8 +21,9 @@ public class ForecastRequester {
     }
 
     public String request() throws ForecastRequestException {
-        final String latitude = "51.750000";    //fixme - get it from somewhere!
-        final String longitude = "19.466670";
+        City city = Common.getCityList().get(Common.getLastCityIndex());
+        final String latitude = String.valueOf(city.getLocation().getLat());
+        final String longitude = String.valueOf(city.getLocation().getLng());
         final String locale = context.getResources().getConfiguration().locale.getLanguage().toLowerCase();
         final String replacedUrl = URL
                 .replace("{latitude}", latitude)
