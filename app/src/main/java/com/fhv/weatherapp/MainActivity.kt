@@ -27,7 +27,6 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
-import com.fhv.weatherapp.model.SmallWeather
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -46,8 +45,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var listView: ListView? = null
 
-    private lateinit var dataModels: ArrayList<SmallWeather>
-    private var adapter: CustomAdapter? = null
+    private var adapter: HeaderListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,12 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         //list filled with mock data
         listView = findViewById(R.id.list) as ListView
-        dataModels = ArrayList<SmallWeather>()
-        dataModels.add(SmallWeather("Dornbirn", "26", "snow"))
-        dataModels.add(SmallWeather("Dornbirn", "25", "rain"))
-        dataModels.add(SmallWeather("Dornbirn", "23", "wind"))
-        dataModels.add(SmallWeather("Dornbirn", "21", "fog"))
-        adapter = CustomAdapter(dataModels, applicationContext)
+        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
         listView!!.setAdapter(adapter)
 
         ViewModelProviders.of(this)
