@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.repository.WeatherRepository
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
@@ -20,6 +21,11 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
             val apiResponse = forecastRequester.request()
             Log.d(TAG, "Api response: $apiResponse")
             val weather = parseJsonToWeather(apiResponse)
+
+            Common.cityList[Common.lastCityIndex].weather = weather
+
+            // TODO update data of view
+
             Log.d(TAG, "Parsed to Weather: $weather")
             Log.i(TAG, "Successfully retrieved forecast")
             WeatherRepository.putWeather(weather)

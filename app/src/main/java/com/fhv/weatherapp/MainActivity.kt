@@ -25,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
+import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
 import com.fhv.weatherapp.model.SmallWeather
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
@@ -52,7 +53,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ForecastUpdater.startInBackground()
+        // This has to be called always in first/main activity to load previously saved state
+        SharedPrefs.initializeSharedPreferences(this)
+
+        if (Common.cityList.isEmpty()) {
+            getLocationListener()
+        } else {
+            ForecastUpdater.startInBackground()
+        }
 
         //header filled with mock data
         navigationView = findViewById(R.id.nvView) as NavigationView
@@ -65,15 +73,8 @@ class MainActivity : AppCompatActivity() {
         prepareIcon(iconWeather, "fog")
 
 
+        /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
 
-        /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
-
-        ViewModelProviders.of(this)
-                .get(WeatherViewModel::class.java)
-                .getWeather()
-                .observe(this, Observer { weather ->
-                    info.text = weather.toString()
-                })
 
         /* setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
@@ -95,8 +96,12 @@ class MainActivity : AppCompatActivity() {
         adapter = CustomAdapter(dataModels, applicationContext)
         listView!!.setAdapter(adapter)
 
-        // This has to be called always in first/main activity to load previously saved state
-        SharedPrefs.initializeSharedPreferences(this)
+        ViewModelProviders.of(this)
+                .get(WeatherViewModel::class.java)
+                .getWeather()
+                .observe(this, Observer { weather ->
+                    info.text = weather.toString()
+                })
     }
 
     // This method is called always before activity ends (usually to save activity state)
@@ -104,6 +109,8 @@ class MainActivity : AppCompatActivity() {
 
         SharedPrefs.saveCityList()
         SharedPrefs.saveLastCityIndex()
+
+        Log.d(Common.APP_NAME, "onStop")
 
         super.onStop()
     }
@@ -136,8 +143,6 @@ class MainActivity : AppCompatActivity() {
         super.onConfigurationChanged(newConfig)
         drawerToggle.onConfigurationChanged(newConfig)
     }
-
-
 
 
     // check if user allowed to use location services
@@ -179,8 +184,30 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onLocationChanged(location: Location?) {
                     if (location != null) {
-                        getLocationResult(location)
-                        locationManager.removeUpdates(this)
+
+                        val curloc = getLocationResult(location)
+
+                        if (curloc != null) {
+
+                            var including = false
+
+                            for (city in Common.cityList) {
+                                if (city.location.city == curloc.city) {
+                                    Common.lastCityIndex = Common.cityList.indexOf(city)
+                                    including = true
+                                    break
+                                }
+                            }
+
+                            if (!including){
+                                Common.cityList.add(City(null, curloc))
+                                Common.lastCityIndex = Common.cityList.size - 1
+                            }
+
+                            ForecastUpdater.updateOnce()
+
+                            locationManager.removeUpdates(this)
+                        }
                     }
                 }
             })
@@ -190,6 +217,28 @@ class MainActivity : AppCompatActivity() {
             if (localNetworkLocation != null) {
                 val location: Location = localNetworkLocation
                 getLocationResult(location)
+
+                val curloc = getLocationResult(location)
+
+                if (curloc != null) {
+
+                    var including = false
+
+                    for (city in Common.cityList) {
+                        if (city.location.city == curloc.city) {
+                            Common.lastCityIndex = Common.cityList.indexOf(city)
+                            including = true
+                            break
+                        }
+                    }
+
+                    if (!including){
+                        Common.cityList.add(City(null, curloc))
+                        Common.lastCityIndex = Common.cityList.size - 1
+                    }
+
+                    ForecastUpdater.updateOnce()
+                }
             }
         } else {
 
