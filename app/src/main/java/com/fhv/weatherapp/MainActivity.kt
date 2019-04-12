@@ -3,12 +3,15 @@ package com.fhv.weatherapp
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.*
 import android.location.LocationListener
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -27,6 +30,7 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
+import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -47,9 +51,15 @@ class MainActivity : AppCompatActivity() {
 
     private var adapter: HeaderListAdapter? = null
 
+    private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // notify on no internet connection
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(broadcastReceiver, filter)
 
         // This has to be called always in first/main activity to load previously saved state
         SharedPrefs.initializeSharedPreferences(this)
@@ -289,5 +299,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(Common.APP_NAME, "City name was not found.")
 
         return ""
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
     }
 }
