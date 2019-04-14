@@ -4,12 +4,15 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.*
 import android.location.LocationListener
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -29,7 +32,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
+import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
+import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
@@ -51,11 +56,24 @@ class MainActivity : AppCompatActivity() {
 
     private var adapter: HeaderListAdapter? = null
 
+    private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ForecastUpdater.startInBackground()
+        // notify on no internet connection
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(broadcastReceiver, filter)
+
+        // This has to be called always in first/main activity to load previously saved state
+        SharedPrefs.initializeSharedPreferences(this)
+
+        if (Common.cityList.isEmpty()) {
+            getLocationListener()
+        } else {
+            ForecastUpdater.startInBackground()
+        }
 
         //header filled with mock data
         navigationView = findViewById(R.id.nvView) as NavigationView
@@ -101,8 +119,7 @@ class MainActivity : AppCompatActivity() {
         prepareIcon(iconWindy, "wind", "tiny")
         prepareIcon(iconRainy, "rain", "tiny")
 
-
-        /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
+        /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
 
       /*  ViewModelProviders.of(this)
                 .get(WeatherViewModel::class.java)
@@ -126,15 +143,12 @@ class MainActivity : AppCompatActivity() {
         mDrawer!!.addDrawerListener(drawerToggle)
 
 
-
-
-        // This has to be called always in first/main activity to load previously saved state
-        SharedPrefs.initializeSharedPreferences(this)
-
-
+        //list filled with mock data
         listView = findViewById(R.id.list) as ListView
         adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
         listView!!.setAdapter(adapter)
+
+
     }
 
     // This method is called always before activity ends (usually to save activity state)
@@ -143,11 +157,11 @@ class MainActivity : AppCompatActivity() {
         SharedPrefs.saveCityList()
         SharedPrefs.saveLastCityIndex()
 
+        Log.d(Common.APP_NAME, "onStop")
+
         super.onStop()
     }
 
-
-    //TODO: move this function somewhere else and connect this functions
     @SuppressLint("SetJavaScriptEnabled")
     private fun prepareIcon(icon: WebView, weatherIconType: String, iconSize: String) {
         var iconSizeString = String.format("file:///android_asset/%sWeatherImage.html", iconSize)
@@ -174,8 +188,6 @@ class MainActivity : AppCompatActivity() {
         super.onConfigurationChanged(newConfig)
         drawerToggle.onConfigurationChanged(newConfig)
     }
-
-
 
 
     // check if user allowed to use location services
@@ -217,8 +229,30 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onLocationChanged(location: Location?) {
                     if (location != null) {
-                        getLocationResult(location)
-                        locationManager.removeUpdates(this)
+
+                        val curloc = getLocationResult(location)
+
+                        if (curloc != null) {
+
+                            var including = false
+
+                            for (city in Common.cityList) {
+                                if (city.location.city == curloc.city) {
+                                    Common.lastCityIndex = Common.cityList.indexOf(city)
+                                    including = true
+                                    break
+                                }
+                            }
+
+                            if (!including){
+                                Common.cityList.add(City(null, curloc))
+                                Common.lastCityIndex = Common.cityList.size - 1
+                            }
+
+                            ForecastUpdater.updateOnce()
+
+                            locationManager.removeUpdates(this)
+                        }
                     }
                 }
             })
@@ -228,6 +262,28 @@ class MainActivity : AppCompatActivity() {
             if (localNetworkLocation != null) {
                 val location: Location = localNetworkLocation
                 getLocationResult(location)
+
+                val curloc = getLocationResult(location)
+
+                if (curloc != null) {
+
+                    var including = false
+
+                    for (city in Common.cityList) {
+                        if (city.location.city == curloc.city) {
+                            Common.lastCityIndex = Common.cityList.indexOf(city)
+                            including = true
+                            break
+                        }
+                    }
+
+                    if (!including){
+                        Common.cityList.add(City(null, curloc))
+                        Common.lastCityIndex = Common.cityList.size - 1
+                    }
+
+                    ForecastUpdater.updateOnce()
+                }
             }
         } else {
 
@@ -285,5 +341,10 @@ class MainActivity : AppCompatActivity() {
         Log.d(Common.APP_NAME, "City name was not found.")
 
         return ""
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
     }
 }
