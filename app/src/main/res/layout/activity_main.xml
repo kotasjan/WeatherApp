@@ -31,14 +31,6 @@
                         layout="@layout/card_view_weather"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                    <include
-                        layout="@layout/card_view_weather"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                    <include
-                        layout="@layout/card_view_weather"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
                 </LinearLayout>
                 <!--<TextView
                     android:id="@+id/info"
