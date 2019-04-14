@@ -81,10 +81,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="10km/s"
+                    android:layout_marginLeft="-25dp"
                     android:gravity="center"
-                    android:textSize="20dp"
-                    android:textColor="#000"/>
+                    android:text="10km/s"
+                    android:textColor="#000"
+                    android:textSize="20dp" />
 
             </LinearLayout>
 
@@ -106,10 +107,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="60%"
+                    android:layout_marginLeft="-25dp"
                     android:gravity="center"
-                    android:textSize="20dp"
-                    android:textColor="#000"/>
+                    android:text="60%"
+                    android:textColor="#000"
+                    android:textSize="20dp" />
 
             </LinearLayout>
         </RelativeLayout>

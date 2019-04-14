@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
         temperatureText.setText("24")
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
-        prepareIcon(iconWeather, "fog")
+        prepareIcon(iconWeather, "fog", "medium")
 
 
 
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         val temperatrueMainView = findViewById(R.id.temperature_main_view) as TextView
         temperatrueMainView.setText("29 C")
         val iconMainView = findViewById(R.id.icon_main_view) as WebView
-        prepareIcon2(iconMainView, "fog")
+        prepareIcon(iconMainView, "fog", "large")
         val summaryMainView = findViewById(R.id.summary_main_view) as TextView
         summaryMainView.setText("Rain starting later this afternoon, continuing until this evening.")
         val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
@@ -98,8 +98,8 @@ class MainActivity : AppCompatActivity() {
 
         val iconWindy = findViewById(R.id.windy_icon) as WebView
         val iconRainy = findViewById(R.id.rainy_icon) as WebView
-        prepareIcon3(iconWindy, "wind")
-        prepareIcon3(iconRainy, "rain")
+        prepareIcon(iconWindy, "wind", "tiny")
+        prepareIcon(iconRainy, "rain", "tiny")
 
 
         /*button.setOnClickListener { ForecastUpdater.updateOnce() } */
@@ -149,40 +149,17 @@ class MainActivity : AppCompatActivity() {
 
     //TODO: move this function somewhere else and connect this functions
     @SuppressLint("SetJavaScriptEnabled")
-    private fun prepareIcon(icon: WebView, weatherIconType: String) {
+    private fun prepareIcon(icon: WebView, weatherIconType: String, iconSize: String) {
+        var iconSizeString = String.format("file:///android_asset/%sWeatherImage.html", iconSize)
         icon.settings.javaScriptEnabled = true
         icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
-        icon.loadUrl("file:///android_asset/mediumWeatherImage.html")
+        icon.loadUrl(iconSizeString)
         icon.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 view.loadUrl("javascript:set_icon_type('$weatherIconType')")
             }
         }
     }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun prepareIcon2(icon: WebView, weatherIconType: String) {
-        icon.settings.javaScriptEnabled = true
-        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
-        icon.loadUrl("file:///android_asset/largeWeatherImage.html")
-        icon.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
-                view.loadUrl("javascript:set_icon_type('$weatherIconType')")
-            }
-        }
-    }
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun prepareIcon3(icon: WebView, weatherIconType: String) {
-        icon.settings.javaScriptEnabled = true
-        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
-        icon.loadUrl("file:///android_asset/tinyWeatherImage.html")
-        icon.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView, url: String) {
-                view.loadUrl("javascript:set_icon_type('$weatherIconType')")
-            }
-        }
-    }
-
 
     private fun setupDrawerToggle(): ActionBarDrawerToggle {
         return ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close)
