@@ -36,7 +36,7 @@
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="150dp" />
+                android:layout_marginEnd="130dp" />
 
             <TextView
                 android:id="@+id/summary_main_view"
