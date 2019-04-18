@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
-        cityText.setText(R.string.app_name)
+        cityText.setText("Current location")
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
         temperatureText.setText("24")
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
