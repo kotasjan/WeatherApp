@@ -40,7 +40,6 @@ public class DetailsListAdapter extends ArrayAdapter<Details> {
     public View getView(int position, View convertView, ViewGroup parent) {
         Details dataModel = getItem(position);
         ViewHolder viewHolder;
-        final View result;
 
         if (convertView == null) {
             viewHolder = new ViewHolder();
@@ -48,12 +47,9 @@ public class DetailsListAdapter extends ArrayAdapter<Details> {
             convertView = inflater.inflate(R.layout.row_item_details, parent, false);
             viewHolder.detail = (TextView) convertView.findViewById(R.id.detail);
             viewHolder.info = (TextView) convertView.findViewById(R.id.info);
-            result = convertView;
-
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
         }
 
         lastPosition = position;
