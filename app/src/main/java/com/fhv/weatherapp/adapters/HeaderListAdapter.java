@@ -1,4 +1,4 @@
-package com.fhv.weatherapp;
+package com.fhv.weatherapp.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fhv.weatherapp.R;
 import com.fhv.weatherapp.model.City;
 
 import java.util.ArrayList;

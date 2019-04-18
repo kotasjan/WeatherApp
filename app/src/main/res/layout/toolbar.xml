@@ -14,5 +14,6 @@
         android:layout_height="wrap_content"
         style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
         android:layout_gravity="center"
+        android:textColor="@color/white"
         android:textSize="25dp"/>
 </android.support.v7.widget.Toolbar>
