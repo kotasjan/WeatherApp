@@ -3,8 +3,8 @@ package com.fhv.weatherapp
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
-import android.content.*
 import android.content.BroadcastReceiver
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -30,12 +30,8 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
+import com.fhv.weatherapp.viewmodel.CityViewModel
 import kotlinx.android.synthetic.main.list_view.*
-import com.fhv.weatherapp.viewmodel.WeatherViewModel
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Task
-import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -97,18 +93,18 @@ class MainActivity : AppCompatActivity() {
 
 
         ViewModelProviders.of(this)
-                .get(WeatherViewModel::class.java)
-                .getWeather()
-                .observe(this, android.arch.lifecycle.Observer { weather ->
-                    temperatureMainView.setText(Math.round(weather!!.currentWeather.temperature).toString() + " \u2103")
-                    prepareIcon(iconMainView, weather!!.currentWeather.icon, "large")
-                    summaryMainView.setText(weather!!.currentWeather.summary)
-                    summaryMainView2.setText(weather!!.currentWeather.summary)
+                .get(CityViewModel::class.java)
+                .getCity()
+                .observe(this, android.arch.lifecycle.Observer { city ->
+                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
+                    prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
+                    summaryMainView.setText(city!!.weather!!.currentWeather.summary)
+                    summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.setText(weather!!.currentWeather.windSpeed.toString() + " m/s")
-                    rainProp.setText((weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
-                    toolbarTitle.setText("Current location")
+                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
+                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
+                    toolbarTitle.setText(city!!.location.city)
                  })
 
 
@@ -133,7 +129,6 @@ class MainActivity : AppCompatActivity() {
         weatherCard.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val intent = Intent(this@MainActivity, WeatherDetails::class.java)
-                intent.putExtra("Location", "Current location")
                 startActivity(intent)
             }
         })

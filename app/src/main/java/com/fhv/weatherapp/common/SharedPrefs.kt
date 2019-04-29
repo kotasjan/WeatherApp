@@ -50,7 +50,7 @@ object SharedPrefs {
 
                 val mJson = prefs!!.getString(CITY_LIST, null)
                 Log.d(Common.APP_NAME, "Loaded cityList: $mJson")
-                Common.cityList = Gson().fromJson<MutableList<City>>(mJson, MutableList::class.java)
+                Common.cityList = Gson().fromJson<MutableList<City>>(mJson, MutableList::class.java) // FIXME JAN
             }
         }
     }

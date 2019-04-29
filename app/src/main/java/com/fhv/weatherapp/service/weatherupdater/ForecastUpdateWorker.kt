@@ -7,9 +7,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.model.City
-import com.fhv.weatherapp.repository.WeatherRepository
+import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.location.LocationUpdater
-import com.fhv.weatherapp.service.notification.rain.RainNotifier
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
 import com.fhv.weatherapp.service.weatherupdater.web.parseJsonToWeather
@@ -45,10 +44,12 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
 
             Log.d(TAG, "Parsed to Weather: $weather")
             Log.i(TAG, "Successfully retrieved forecast")
-            WeatherRepository.putWeather(weather)
+            Log.d(TAG, "Resulting city: $city")
+            CityRepository.putCity(city)
 
-            Log.d(TAG, "Will send notification if necessary.")
-            RainNotifier.notifyOfRainIfNecessary(applicationContext, weather)
+            // FIXME PIOTR P
+//            Log.d(TAG, "Will send notification if necessary.")
+//            RainNotifier.notifyOfRainIfNecessary(applicationContext, weather)
 
             Result.success()
         } catch (e: ForecastRequestException) {

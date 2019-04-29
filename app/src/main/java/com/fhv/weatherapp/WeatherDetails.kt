@@ -1,7 +1,6 @@
 package com.fhv.weatherapp
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
@@ -12,11 +11,8 @@ import android.widget.ListView
 import android.widget.TextView
 import com.fhv.weatherapp.adapters.DetailsListAdapter
 import com.fhv.weatherapp.model.Details
-import com.fhv.weatherapp.viewmodel.WeatherViewModel
-
-import kotlinx.android.synthetic.main.activity_weather_details.*
-import kotlinx.android.synthetic.main.row_item.*
-import java.util.ArrayList
+import com.fhv.weatherapp.viewmodel.CityViewModel
+import java.util.*
 
 class WeatherDetails : FragmentActivity() {
 
@@ -28,7 +24,6 @@ class WeatherDetails : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather_details)
 
-        val location = intent.getStringExtra("Location")
         val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
         val temperatureDetails = findViewById<TextView>(R.id.details_temperature)
         val iconDetails = findViewById<WebView>(R.id.details_icon)
@@ -37,21 +32,21 @@ class WeatherDetails : FragmentActivity() {
         var dataModels = ArrayList<Details>()
 
         ViewModelProviders.of(this)
-                .get(WeatherViewModel::class.java)
-                .getWeather()
-                .observe(this, android.arch.lifecycle.Observer { weather ->
-                    toolbarTitle.text = location
-                    temperatureDetails.text = Math.round(weather!!.currentWeather.temperature).toString() + " \u2103"
-                    summaryDetail.text = weather!!.currentWeather.summary
-                    prepareIcon(iconDetails, weather!!.currentWeather.icon)
-                    dataModels.add(Details("Apparental temp.", Math.round(weather!!.currentWeather.temperature).toString() + " \u2103"))
-                    dataModels.add(Details("Probability of rain", (weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("Humidity",(weather!!.detailedCurrentWeather.humidity * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("Pressure", Math.round(weather!!.detailedCurrentWeather.pressure).toString() + " Pa"))
-                    dataModels.add(Details("Wind speed", weather!!.currentWeather.windSpeed.toString() + " m/s"))
-                    dataModels.add(Details("Cloud cover", (weather!!.detailedCurrentWeather.cloudCover * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("UV index", weather!!.detailedCurrentWeather.uvIndex.toInt().toString()))
-                    dataModels.add(Details("Ozone", Math.round(weather!!.detailedCurrentWeather.ozone).toString() + " DU"))
+                .get(CityViewModel::class.java)
+                .getCity()
+                .observe(this, android.arch.lifecycle.Observer { city ->
+                    toolbarTitle.text = city!!.location.city
+                    temperatureDetails.text = Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103"
+                    summaryDetail.text = city!!.weather!!.currentWeather.summary
+                    prepareIcon(iconDetails, city!!.weather!!.currentWeather.icon)
+                    dataModels.add(Details("Apparental temp.", Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103"))
+                    dataModels.add(Details("Probability of rain", (city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%"))
+                    dataModels.add(Details("Humidity", (city!!.weather!!.detailedCurrentWeather.humidity * 100).toInt().toString() + "%"))
+                    dataModels.add(Details("Pressure", Math.round(city!!.weather!!.detailedCurrentWeather.pressure).toString() + " Pa"))
+                    dataModels.add(Details("Wind speed", city!!.weather!!.currentWeather.windSpeed.toString() + " m/s"))
+                    dataModels.add(Details("Cloud cover", (city!!.weather!!.detailedCurrentWeather.cloudCover * 100).toInt().toString() + "%"))
+                    dataModels.add(Details("UV index", city!!.weather!!.detailedCurrentWeather.uvIndex.toInt().toString()))
+                    dataModels.add(Details("Ozone", Math.round(city!!.weather!!.detailedCurrentWeather.ozone).toString() + " DU"))
                     adapter = DetailsListAdapter(dataModels, applicationContext)
                     listView!!.setAdapter(adapter)
                 })
