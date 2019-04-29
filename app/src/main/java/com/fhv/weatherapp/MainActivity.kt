@@ -2,12 +2,8 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.IntentFilter
-import android.content.IntentSender
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.location.*
@@ -19,17 +15,17 @@ import android.support.design.widget.NavigationView
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import com.fhv.weatherapp.adapters.HeaderListAdapter
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.City
@@ -40,10 +36,8 @@ import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
-import javax.xml.validation.Validator
 
 class MainActivity : AppCompatActivity() {
 
@@ -75,28 +69,50 @@ class MainActivity : AppCompatActivity() {
             ForecastUpdater.startInBackground()
         }
 
+        /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
+        /* setting listener for get location button
+        btn_get_location.setOnClickListener { getLocationListener() }*/
+
         //header filled with mock data
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
-        cityText.setText(R.string.app_name)
+        cityText.setText("Current location")
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
         temperatureText.setText("24")
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
         prepareIcon(iconWeather, "fog", "medium")
 
 
-
         //first card view
-
-        val temperatrueMainView = findViewById(R.id.temperature_main_view) as TextView
-        temperatrueMainView.setText("29 C")
+        val temperatureMainView = findViewById(R.id.temperature_main_view) as TextView
         val iconMainView = findViewById(R.id.icon_main_view) as WebView
-        prepareIcon(iconMainView, "fog", "large")
         val summaryMainView = findViewById(R.id.summary_main_view) as TextView
-        summaryMainView.setText("Rain starting later this afternoon, continuing until this evening.")
         val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
-        summaryMainView2.setText("Rain starting later this afternoon, continuing until this evening.")
+        val iconWindy = findViewById(R.id.windy_icon) as WebView
+        val iconRainy = findViewById(R.id.rainy_icon) as WebView
+        val windSpeed = findViewById(R.id.wind_speed) as TextView
+        val rainProp = findViewById(R.id.rain_prop) as TextView
+        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
+
+
+
+
+        ViewModelProviders.of(this)
+                .get(WeatherViewModel::class.java)
+                .getWeather()
+                .observe(this, android.arch.lifecycle.Observer { weather ->
+                    temperatureMainView.setText(Math.round(weather!!.currentWeather.temperature).toString() + " \u2103")
+                    prepareIcon(iconMainView, weather!!.currentWeather.icon, "large")
+                    summaryMainView.setText(weather!!.currentWeather.summary)
+                    summaryMainView2.setText(weather!!.currentWeather.summary)
+                    prepareIcon(iconWindy, "wind", "tiny")
+                    prepareIcon(iconRainy, "rain", "tiny")
+                    windSpeed.setText(weather!!.currentWeather.windSpeed.toString() + " m/s")
+                    rainProp.setText((weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
+                    toolbarTitle.setText("Current location")
+                 })
+
 
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
@@ -114,41 +130,29 @@ class MainActivity : AppCompatActivity() {
         }
         valueAnimator.start();
 
-        val iconWindy = findViewById(R.id.windy_icon) as WebView
-        val iconRainy = findViewById(R.id.rainy_icon) as WebView
-        prepareIcon(iconWindy, "wind", "tiny")
-        prepareIcon(iconRainy, "rain", "tiny")
 
-        /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
+        val weatherCard = findViewById(R.id.weather_card) as CardView
+        weatherCard.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                val intent = Intent(this@MainActivity, WeatherDetails::class.java)
+                intent.putExtra("Location", "Current location")
+                startActivity(intent)
+            }
+        })
 
-      /*  ViewModelProviders.of(this)
-                .get(WeatherViewModel::class.java)
-                .getWeather()
-                .observe(this, Observer { weather ->
-                    info.text = weather.toString()
-                })*/
 
-        /* setting listener for get location button
-        btn_get_location.setOnClickListener { getLocationListener() }*/
 
         toolbar = findViewById(R.id.toolbar) as Toolbar
-        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
         setSupportActionBar(toolbar)
-        toolbarTitle.setText("Current location")
         getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
-
 
         mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
 
-
-        //list filled with mock data
         listView = findViewById(R.id.list) as ListView
         adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
         listView!!.setAdapter(adapter)
-
-
     }
 
     // This method is called always before activity ends (usually to save activity state)

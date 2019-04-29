@@ -11,10 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_margin="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp"
-        >
+        tools:layout_editor_absoluteX="85dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -26,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="50dp"
+                android:layout_marginStart="150dp"
                 android:layout_marginTop="30dp"
                 android:textColor="#000"
                 android:textSize="60dp" />
@@ -36,7 +35,7 @@
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="20dp" />
+                android:layout_marginEnd="130dp" />
 
             <TextView
                 android:id="@+id/summary_main_view"
@@ -50,6 +49,7 @@
                 android:layout_marginBottom="70dp"
                 android:textAlignment="center"
                 android:textSize="20dp" />
+
             <TextView
                 android:id="@+id/summary_main_view2"
                 android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="150dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="150dp"
                 android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
