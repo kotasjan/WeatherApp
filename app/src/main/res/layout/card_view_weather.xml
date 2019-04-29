@@ -28,7 +28,6 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="50dp"
                 android:layout_marginTop="30dp"
-                android:text="26 C"
                 android:textColor="#000"
                 android:textSize="60dp" />
 
@@ -80,11 +79,11 @@
                     android:layout_marginEnd="20dp" />
 
                 <TextView
+                    android:id="@+id/wind_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="-25dp"
                     android:gravity="center"
-                    android:text="10km/s"
                     android:textColor="#000"
                     android:textSize="20dp" />
 
@@ -106,11 +105,11 @@
                     android:layout_marginEnd="20dp" />
 
                 <TextView
+                    android:id="@+id/rain_prop"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="-25dp"
                     android:gravity="center"
-                    android:text="60%"
                     android:textColor="#000"
                     android:textSize="20dp" />
 

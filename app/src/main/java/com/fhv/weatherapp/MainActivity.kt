@@ -2,6 +2,7 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.arch.lifecycle.ViewModelProviders
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -31,6 +32,7 @@ import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
+import com.fhv.weatherapp.viewmodel.WeatherViewModel
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
@@ -68,14 +70,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
-
-        /*  ViewModelProviders.of(this)
-                  .get(WeatherViewModel::class.java)
-                  .getWeather()
-                  .observe(this, Observer { weather ->
-                      info.text = weather.toString()
-                  })*/
-
         /* setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
@@ -92,13 +86,34 @@ class MainActivity : AppCompatActivity() {
 
         //first card view
         val temperatureMainView = findViewById(R.id.temperature_main_view) as TextView
-        temperatureMainView.setText("29 C")
         val iconMainView = findViewById(R.id.icon_main_view) as WebView
-        prepareIcon(iconMainView, "fog", "large")
         val summaryMainView = findViewById(R.id.summary_main_view) as TextView
-        summaryMainView.setText("Rain starting later this afternoon, continuing until this evening.")
         val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
-        summaryMainView2.setText("Rain starting later this afternoon, continuing until this evening.")
+        val iconWindy = findViewById(R.id.windy_icon) as WebView
+        val iconRainy = findViewById(R.id.rainy_icon) as WebView
+        val windSpeed = findViewById(R.id.wind_speed) as TextView
+        val rainProp = findViewById(R.id.rain_prop) as TextView
+        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
+
+
+
+
+        ViewModelProviders.of(this)
+                .get(WeatherViewModel::class.java)
+                .getWeather()
+                .observe(this, android.arch.lifecycle.Observer { weather ->
+                    temperatureMainView.setText(Math.round(weather!!.currentWeather.temperature).toString() + " \u2103")
+                    prepareIcon(iconMainView, weather!!.currentWeather.icon, "large")
+                    summaryMainView.setText(weather!!.currentWeather.summary)
+                    summaryMainView2.setText(weather!!.currentWeather.summary)
+                    prepareIcon(iconWindy, "wind", "tiny")
+                    prepareIcon(iconRainy, "rain", "tiny")
+                    windSpeed.setText(weather!!.currentWeather.windSpeed.toString() + " m/s")
+                    rainProp.setText((weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
+                    toolbarTitle.setText("Current location")
+                 })
+
+
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
         valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -125,15 +140,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        val iconWindy = findViewById(R.id.windy_icon) as WebView
-        val iconRainy = findViewById(R.id.rainy_icon) as WebView
-        prepareIcon(iconWindy, "wind", "tiny")
-        prepareIcon(iconRainy, "rain", "tiny")
+
 
         toolbar = findViewById(R.id.toolbar) as Toolbar
-        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
         setSupportActionBar(toolbar)
-        toolbarTitle.setText("Current location")
         getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
 
         mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
