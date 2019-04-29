@@ -12,9 +12,10 @@ object ForecastUpdater {
 
         Log.d(TAG, "Enqueue periodic forecast update in the background")
 
+        val inputData = Data.Builder().putBoolean("updateLocation", false).build()
+
         val updateRequest = PeriodicWorkRequestBuilder<ForecastUpdateWorker>(15, TimeUnit.MINUTES)
-                // todo maybe setInputData() here
-                // or constraints
+                .setInputData(inputData)
                 .build()
         WorkManager.getInstance().enqueueUniquePeriodicWork("forecastUpdate", ExistingPeriodicWorkPolicy.KEEP, updateRequest)
     }
@@ -24,8 +25,10 @@ object ForecastUpdater {
 
         Log.d(TAG, "Enqueue one-time forecast update in the background")
 
+        val inputData = Data.Builder().putBoolean("updateLocation", true).build()
+
         val updateRequest = OneTimeWorkRequestBuilder<ForecastUpdateWorker>()
-                // todo same as above
+                .setInputData(inputData)
                 .build()
         WorkManager.getInstance().enqueueUniqueWork("forecastUpdate", ExistingWorkPolicy.KEEP, updateRequest)
 
