@@ -9,6 +9,7 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.repository.WeatherRepository
 import com.fhv.weatherapp.service.location.LocationUpdater
+import com.fhv.weatherapp.service.notification.rain.RainNotifier
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
 import com.fhv.weatherapp.service.weatherupdater.web.parseJsonToWeather

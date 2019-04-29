@@ -2,16 +2,10 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.IntentFilter
-import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.location.*
-import android.location.LocationListener
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -22,8 +16,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -32,15 +24,10 @@ import android.widget.TextView
 import android.widget.Toast
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
-import com.fhv.weatherapp.model.City
-import com.fhv.weatherapp.model.CurrentLocation
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
-import com.fhv.weatherapp.viewmodel.WeatherViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.list_view.*
 import java.util.*
-import javax.xml.validation.Validator
 
 class MainActivity : AppCompatActivity() {
 
