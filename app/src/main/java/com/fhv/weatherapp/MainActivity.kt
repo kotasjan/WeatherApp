@@ -22,6 +22,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,9 +31,10 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
+import com.fhv.weatherapp.view.graph.ForecastGraphHandler
 import com.fhv.weatherapp.viewmodel.CityViewModel
+import com.github.mikephil.charting.charts.BarChart
 import kotlinx.android.synthetic.main.list_view.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -90,6 +92,16 @@ class MainActivity : AppCompatActivity() {
         val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
 
 
+        // second card - hourly graphs
+        val graph = findViewById<BarChart>(R.id.graph)
+        val changeTypeTextView = findViewById<TextView>(R.id.change_graph_type_tv)
+        val changeGraphTypeButton = findViewById<ImageButton>(R.id.button_graph)
+        val graphHandler = ForecastGraphHandler(graph)
+        changeGraphTypeButton.setOnClickListener { view ->
+            graphHandler.changeGraphType()
+            changeTypeTextView.text = graphHandler.graphStateAsString
+        }
+
 
 
         ViewModelProviders.of(this)
@@ -105,8 +117,10 @@ class MainActivity : AppCompatActivity() {
                     windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
                     rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
                     toolbarTitle.setText(city!!.location.city)
-                 })
 
+                    // update graphs
+                    graphHandler.updateData(city!!.weather!!.hourlyWeather)
+                })
 
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
@@ -114,8 +128,8 @@ class MainActivity : AppCompatActivity() {
         valueAnimator.interpolator = LinearInterpolator()
         valueAnimator.duration = 9000L
 
-        valueAnimator.addUpdateListener{
-            var progress =  it.animatedValue as Float
+        valueAnimator.addUpdateListener {
+            var progress = it.animatedValue as Float
             var width = summaryMainView.getWidth()
             var translationX = width * progress
             summaryMainView.setTranslationX(-translationX)
@@ -145,9 +159,9 @@ class MainActivity : AppCompatActivity() {
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
 
-        listView = findViewById(R.id.list) as ListView
-        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
-        listView!!.setAdapter(adapter)
+//        listView = findViewById(R.id.list) as ListView
+//        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
+//        listView!!.setAdapter(adapter)
     }
 
     // This method is called always before activity ends (usually to save activity state)

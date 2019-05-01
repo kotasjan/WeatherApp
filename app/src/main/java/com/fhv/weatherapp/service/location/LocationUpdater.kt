@@ -37,20 +37,20 @@ object LocationUpdater {
 
                         if (curloc != null) {
 
-                            var including = false
-
-                            for (city in Common.cityList) {
-                                if (city.location.city == curloc.city) {
-                                    Common.lastCityIndex = Common.cityList.indexOf(city)
-                                    including = true
-                                    break
-                                }
-                            }
-
-                            if (!including) {
-                                Common.cityList.add(City(null, curloc))
-                                Common.lastCityIndex = Common.cityList.size - 1
-                            }
+//                            var including = false
+//
+//                            for (city in Common.cityList) {
+//                                if (city.location.city == curloc.city) {
+//                                    Common.lastCityIndex = Common.cityList.indexOf(city)
+//                                    including = true
+//                                    break
+//                                }
+//                            }
+//
+//                            if (!including) {
+//                                Common.cityList.add(City(null, curloc))
+//                                Common.lastCityIndex = Common.cityList.size - 1
+//                            }
 
                             currentLocation = curloc
 
