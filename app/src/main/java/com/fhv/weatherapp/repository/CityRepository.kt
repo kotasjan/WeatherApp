@@ -1,22 +1,19 @@
 package com.fhv.weatherapp.repository
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.util.Log
-import com.fhv.weatherapp.model.City
+import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
+import com.fhv.weatherapp.database.CityDao
+import com.fhv.weatherapp.database.CityEntity
 
-object CityRepository {
-    private val TAG = "CityRepository"
-    private val cached: MutableLiveData<City> = MutableLiveData()
+class CityRepository(private val cityDao: CityDao) {
+    val allCities: LiveData<List<CityEntity>> = cityDao.getCities()
 
-    fun getCity(): LiveData<City> {
-        return cached
+    @WorkerThread
+    fun insert(city: CityEntity) {
+        cityDao.insertCity(city)
     }
 
-    fun putCity(city: City) {
-        Log.d(TAG, "Updating cache...")
-        Log.d(TAG, "Old: ${cached.value}")
-        cached.postValue(city)
-        Log.d(TAG, "New: ${cached.value}")
+    fun getCities(): LiveData<List<CityEntity>>? {
+        return allCities
     }
 }

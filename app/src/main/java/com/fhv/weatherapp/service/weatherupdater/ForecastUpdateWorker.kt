@@ -6,17 +6,19 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.fhv.weatherapp.common.Common
+import com.fhv.weatherapp.database.CityEntity
 import com.fhv.weatherapp.model.City
-import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.location.LocationUpdater
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
 import com.fhv.weatherapp.service.weatherupdater.web.parseJsonToWeather
+import com.fhv.weatherapp.viewmodel.CityViewModel
 
 class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
     private val TAG = "ForecastUpdateWorker"
     private val forecastRequester = ForecastRequester(appContext)
+    private lateinit var cityViewModel: CityViewModel
 
     override fun doWork(): Result {
         Log.d(TAG, "Start work on update weather")
@@ -45,7 +47,8 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
             Log.d(TAG, "Parsed to Weather: $weather")
             Log.i(TAG, "Successfully retrieved forecast")
             Log.d(TAG, "Resulting city: $city")
-            CityRepository.putCity(city)
+
+            cityViewModel.insert(CityEntity(city))
 
             // FIXME PIOTR P
 //            Log.d(TAG, "Will send notification if necessary.")

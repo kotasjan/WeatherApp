@@ -1,8 +1,8 @@
 package com.fhv.weatherapp.service.notification
 
 import android.content.Context
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.fhv.weatherapp.R
 import kotlin.random.Random
 

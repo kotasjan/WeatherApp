@@ -2,7 +2,6 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
@@ -11,12 +10,6 @@ import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -25,12 +18,21 @@ import android.webkit.WebViewClient
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProviders
 import com.fhv.weatherapp.adapters.HeaderListAdapter
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
+import com.fhv.weatherapp.database.CityDatabase
+import com.fhv.weatherapp.database.CityEntity
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.CityViewModel
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.list_view.*
 import java.util.*
 
@@ -68,64 +70,61 @@ class MainActivity : AppCompatActivity() {
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
         //header filled with mock data
-        navigationView = findViewById(R.id.nvView) as NavigationView
+        navigationView = findViewById(R.id.nvView)
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
-        cityText.setText("Current location")
+        cityText.text = "Current location"
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
-        temperatureText.setText("24")
+        temperatureText.text = "24"
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
         prepareIcon(iconWeather, "fog", "medium")
 
 
         //first card view
-        val temperatureMainView = findViewById(R.id.temperature_main_view) as TextView
-        val iconMainView = findViewById(R.id.icon_main_view) as WebView
-        val summaryMainView = findViewById(R.id.summary_main_view) as TextView
-        val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
-        val iconWindy = findViewById(R.id.windy_icon) as WebView
-        val iconRainy = findViewById(R.id.rainy_icon) as WebView
-        val windSpeed = findViewById(R.id.wind_speed) as TextView
-        val rainProp = findViewById(R.id.rain_prop) as TextView
-        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
+        val temperatureMainView = findViewById<TextView>(R.id.temperature_main_view)
+        val iconMainView = findViewById<WebView>(R.id.icon_main_view)
+        val summaryMainView = findViewById<TextView>(R.id.summary_main_view)
+        val summaryMainView2 = findViewById<TextView>(R.id.summary_main_view2)
+        val iconWindy = findViewById<WebView>(R.id.windy_icon)
+        val iconRainy = findViewById<WebView>(R.id.rainy_icon)
+        val windSpeed = findViewById<TextView>(R.id.wind_speed)
+        val rainProp = findViewById<TextView>(R.id.rain_prop)
+        val toolbarTitle = findViewById<TextView>(R.id.toolbar_title)
 
 
 
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
-                .getCity()
-                .observe(this, android.arch.lifecycle.Observer { city ->
-                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
-                    prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
-                    summaryMainView.setText(city!!.weather!!.currentWeather.summary)
-                    summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
+                .getCities()?.observe(this, androidx.lifecycle.Observer<List<CityEntity>>  { cityList ->
+                    temperatureMainView.text = Math.round(cityList[Common.lastCityIndex].city.weather!!.currentWeather.temperature).toString() + " \u2103"
+                    prepareIcon(iconMainView, cityList[Common.lastCityIndex].city.weather!!.currentWeather.icon, "large")
+                    summaryMainView.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.summary
+                    summaryMainView2.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.summary
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
-                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
-                    toolbarTitle.setText(city!!.location.city)
-                 })
-
-
+                    windSpeed.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.windSpeed.toString() + " m/s"
+                    rainProp.text = (cityList[Common.lastCityIndex].city.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%"
+                    toolbarTitle.text = cityList[Common.lastCityIndex].city.location.city
+                })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
-        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.repeatCount = ValueAnimator.INFINITE
         valueAnimator.interpolator = LinearInterpolator()
         valueAnimator.duration = 9000L
 
         valueAnimator.addUpdateListener{
             var progress =  it.animatedValue as Float
-            var width = summaryMainView.getWidth()
+            var width = summaryMainView.width
             var translationX = width * progress
-            summaryMainView.setTranslationX(-translationX)
-            summaryMainView2.setTranslationX(-(translationX - width))
+            summaryMainView.translationX = -translationX
+            summaryMainView2.translationX = -(translationX - width)
 
         }
-        valueAnimator.start();
+        valueAnimator.start()
 
 
-        val weatherCard = findViewById(R.id.weather_card) as CardView
+        val weatherCard = findViewById<CardView>(R.id.weather_card)
         weatherCard.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val intent = Intent(this@MainActivity, WeatherDetails::class.java)
@@ -137,17 +136,18 @@ class MainActivity : AppCompatActivity() {
         // setting listener for get location button
         getWeatherButton.setOnClickListener { askForPermissionsAndUpdateWeather() }
 
-        toolbar = findViewById(R.id.toolbar) as Toolbar
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
-        mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        mDrawer = findViewById(R.id.drawer_layout)
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
 
-        listView = findViewById(R.id.list) as ListView
-        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
-        listView!!.setAdapter(adapter)
+        listView = findViewById(R.id.list)
+        var cityList = CityDatabase.getDatabase(application)!!.cityDao().getCities().value?.map{ cityEntity -> cityEntity.city }
+        adapter = HeaderListAdapter(ArrayList(cityList), applicationContext)
+        listView!!.adapter = adapter
     }
 
     // This method is called always before activity ends (usually to save activity state)
