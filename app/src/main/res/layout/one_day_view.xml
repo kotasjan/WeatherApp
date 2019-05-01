@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday"
+            android:paddingTop="25dp"
+            android:paddingBottom="25dp"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black" />
+
+        <WebView
+            android:id="@+id/daily_weather_icon"
+            android:layout_width="70dp"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/min_max_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="26 C / 8 C"
+            android:paddingTop="25dp"
+            android:paddingBottom="25dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:textSize="15dp"
+            android:layout_gravity="center"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
