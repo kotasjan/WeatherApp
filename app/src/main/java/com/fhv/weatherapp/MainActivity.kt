@@ -16,6 +16,9 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.LayoutManager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
@@ -25,14 +28,18 @@ import android.webkit.WebViewClient
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import com.fhv.weatherapp.adapters.DailyWeatherListAdapter
 import com.fhv.weatherapp.adapters.HeaderListAdapter
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
+import com.fhv.weatherapp.model.DailyWeather
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.CityViewModel
 import kotlinx.android.synthetic.main.list_view.*
+import org.joda.time.LocalDate
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private var adapter: HeaderListAdapter? = null
 
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
-
+    private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -105,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                     windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
                     rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
                     toolbarTitle.setText(city!!.location.city)
+                    //dailyWeatherList = city.weather!!.dailyWeather.days
                  })
 
 
@@ -148,6 +156,24 @@ class MainActivity : AppCompatActivity() {
         listView = findViewById(R.id.list) as ListView
         adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
         listView!!.setAdapter(adapter)
+
+
+
+        //mock data
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 6.0, 28.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+
+
+        var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)
+        var dailyAdapter = DailyWeatherListAdapter(dailyWeatherList, applicationContext)
+        val manager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        listDailyView!!.setLayoutManager(manager)
+        listDailyView!!.setAdapter(dailyAdapter)
     }
 
     // This method is called always before activity ends (usually to save activity state)

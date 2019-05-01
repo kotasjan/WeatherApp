@@ -67,7 +67,7 @@ private fun parseHourly(hourly: JSONObject): HourlyWeather {
 }
 
 private fun parseDaily(daily: JSONObject): DailyWeather {
-    val DAYS = 5
+    val DAYS = 7
     val days: MutableList<DailyWeather.Entry> = mutableListOf()
     try {
         val data = daily.getJSONArray("data")

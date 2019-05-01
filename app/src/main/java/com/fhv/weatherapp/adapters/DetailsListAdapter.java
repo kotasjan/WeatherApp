@@ -29,7 +29,6 @@ public class DetailsListAdapter extends ArrayAdapter<Details> {
 
     }
 
-    private int lastPosition = -1;
 
     @Override
     public boolean isEnabled(int position) {
@@ -52,7 +51,6 @@ public class DetailsListAdapter extends ArrayAdapter<Details> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        lastPosition = position;
 
         viewHolder.detail.setText(dataModel.getDetail());
         viewHolder.info.setText(dataModel.getInfo());
