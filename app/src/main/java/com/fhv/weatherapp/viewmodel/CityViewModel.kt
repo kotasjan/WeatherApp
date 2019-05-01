@@ -1,11 +1,14 @@
 package com.fhv.weatherapp.viewmodel
 
 import android.app.Application
+import android.os.AsyncTask
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.fhv.weatherapp.database.CityDao
 import com.fhv.weatherapp.database.CityDatabase
 import com.fhv.weatherapp.database.CityEntity
+import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.repository.CityRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,11 +24,11 @@ class CityViewModel(application: Application) : AndroidViewModel(application) {
         allCities = repository.allCities
     }
 
-    fun insert(city: CityEntity) = viewModelScope.launch(Dispatchers.IO) {
+    fun insert(city: City) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(city)
     }
 
-    fun getCities(): LiveData<List<CityEntity>>? {
+    fun getCities(): LiveData<List<City>>? {
         return repository.getCities()
     }
 }

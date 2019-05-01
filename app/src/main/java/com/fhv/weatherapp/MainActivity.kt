@@ -2,6 +2,7 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
@@ -29,6 +30,8 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.database.CityDatabase
 import com.fhv.weatherapp.database.CityEntity
+import com.fhv.weatherapp.model.City
+import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.CityViewModel
@@ -48,9 +51,14 @@ class MainActivity : AppCompatActivity() {
 
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
 
+    private lateinit var repository: CityRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        repository = CityRepository(CityDatabase.getDatabase(application)!!.cityDao())
+        activity = this
 
         // notify on no internet connection
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -59,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         // This has to be called always in first/main activity to load previously saved state
         SharedPrefs.initializeSharedPreferences(this)
 
-        if (Common.cityList.isEmpty()) {
+        if (repository.getCities().value.isNullOrEmpty()) {
             askForPermissionsAndUpdateWeather()
         } else {
             ForecastUpdater.startInBackground()
@@ -96,16 +104,19 @@ class MainActivity : AppCompatActivity() {
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
-                .getCities()?.observe(this, androidx.lifecycle.Observer<List<CityEntity>>  { cityList ->
-                    temperatureMainView.text = Math.round(cityList[Common.lastCityIndex].city.weather!!.currentWeather.temperature).toString() + " \u2103"
-                    prepareIcon(iconMainView, cityList[Common.lastCityIndex].city.weather!!.currentWeather.icon, "large")
-                    summaryMainView.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.summary
-                    summaryMainView2.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.summary
+                .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>>  { cityList ->
+                    if (cityList.isNullOrEmpty()) {
+                        return@Observer
+                    }
+                    temperatureMainView.text = Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.temperature!!).toString() + " \u2103"
+                    prepareIcon(iconMainView, cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.icon!!, "large")
+                    summaryMainView.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.summary!!
+                    summaryMainView2.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.summary!!
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.text = cityList[Common.lastCityIndex].city.weather!!.currentWeather.windSpeed.toString() + " m/s"
-                    rainProp.text = (cityList[Common.lastCityIndex].city.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%"
-                    toolbarTitle.text = cityList[Common.lastCityIndex].city.location.city
+                    windSpeed.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.windSpeed!!.toString() + " m/s"
+                    rainProp.text = (cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.precipProbability!! * 100).toInt().toString() + "%"
+                    toolbarTitle.text = cityList.getOrNull(Common.lastCityIndex)?.location?.city!!
                 })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
@@ -145,19 +156,24 @@ class MainActivity : AppCompatActivity() {
         mDrawer!!.addDrawerListener(drawerToggle)
 
         listView = findViewById(R.id.list)
-        var cityList = CityDatabase.getDatabase(application)!!.cityDao().getCities().value?.map{ cityEntity -> cityEntity.city }
-        adapter = HeaderListAdapter(ArrayList(cityList), applicationContext)
+        val allCities = repository.getCities().value
+        adapter = HeaderListAdapter(if (allCities!=null) ArrayList(allCities) else ArrayList(), applicationContext)
         listView!!.adapter = adapter
     }
 
     // This method is called always before activity ends (usually to save activity state)
     override fun onStop() {
-        
+
         SharedPrefs.saveLastCityIndex()
 
         Log.d(Common.APP_NAME, "onStop")
 
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(broadcastReceiver)
+        super.onDestroy()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -208,6 +224,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Permission not granted!", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    companion object ActivityHolder {
+        private var activity : AppCompatActivity? = null
+
+        fun getActivity() : AppCompatActivity {
+            return activity!!
         }
     }
 }
