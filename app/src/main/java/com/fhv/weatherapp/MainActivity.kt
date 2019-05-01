@@ -90,8 +90,7 @@ class MainActivity : AppCompatActivity() {
         val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
 
 
-        prepareIcon(iconWindy, "wind", "tiny")
-        prepareIcon(iconRainy, "rain", "tiny")
+
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
@@ -101,7 +100,8 @@ class MainActivity : AppCompatActivity() {
                     prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
                     summaryMainView.setText(city!!.weather!!.currentWeather.summary)
                     summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
-
+                    prepareIcon(iconWindy, "wind", "tiny")
+                    prepareIcon(iconRainy, "rain", "tiny")
                     windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
                     rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
                     toolbarTitle.setText(city!!.location.city)
