@@ -152,8 +152,7 @@ class MainActivity : AppCompatActivity() {
 
     // This method is called always before activity ends (usually to save activity state)
     override fun onStop() {
-
-        SharedPrefs.saveCityList()
+        
         SharedPrefs.saveLastCityIndex()
 
         Log.d(Common.APP_NAME, "onStop")
