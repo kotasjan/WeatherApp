@@ -159,13 +159,13 @@ class MainActivity : AppCompatActivity() {
 
 
         //mock data
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 6.0, 28.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(LocalDate.fromDateFields(Date(1 * 1000)), "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547164800, "wind", 6.0, 28.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547251200, "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547337600, "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547424000, "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547510400, "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547596800, "wind", 26.0, 8.0 ))
+        dailyWeatherList.add(DailyWeather.Entry(1547683200, "wind", 26.0, 8.0 ))
 
 
         var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)

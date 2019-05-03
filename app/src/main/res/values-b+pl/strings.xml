@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Aplikacja Pogodowa</string>
+    <string name="drawer_open">Otwórz menu</string>
+    <string name="drawer_close">Zamknij menu</string>
+    <string name="title_activity_weather_details">Pogodowe detale</string>
+    <string name="degree_celcius">" \u2103"</string>
+    <string name="wind_speed">" m/s"</string>
+    <string name="percentage">%</string>
+    <string name="ozone_unit">" DU"</string>
+    <string name="pressure_unit">" Pa"</string>
+    <string name="apparental_temp">Odczuwalna temp.</string>
+    <string name="propability_of_rain">Szansa opadów</string>
+    <string name="humidity">Wilgotność</string>
+    <string name="wind_speed_string">Prędkość wiatru</string>
+    <string name="pressure_string">Ciśnienie</string>
+    <string name="cloud_cover">Zachmurzenie</string>
+    <string name="uv_index">wskaźnik UV</string>
+    <string name="ozone_string">Ozon</string>
+    <string name="perrmision_not_granted">Nie masz pozwolenia!</string>
+    <string name="no_internet">BRAK INTERNETU</string>
+    <string name="no_internet_message">Nie zaaktualizujesz pogody z powodu braku internetu</string>
+    <string name="im_sure_that">"Jestem pewny, że "</string>
+    <string name="right_now_is_going_to_rain">"w ciągu najbliższych "</string>
+    <string name="in_string">" "</string>
+    <string name="hours_is_going_to_rain">" godzin będzie padać "</string>
+    <string name="so_better_take_umbrella">" dlatego lepiej weź parasolkę."</string>
+    <string name="monday">Poniedziałek</string>
+    <string name="tuesday">Wtorek</string>
+    <string name="wednesday">Środa</string>
+    <string name="thursday">Czwartek</string>
+    <string name="friday">Piątek</string>
+    <string name="saturday">Sobota</string>
+    <string name="sunday">Niedziela</string>
+    <string name="no_day">Brak dnia</string>
+</resources>
