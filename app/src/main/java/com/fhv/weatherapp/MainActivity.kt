@@ -99,17 +99,17 @@ class MainActivity : AppCompatActivity() {
                 .get(CityViewModel::class.java)
                 .getCity()
                 .observe(this, android.arch.lifecycle.Observer { city ->
-                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
+                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
                     summaryMainView.setText(city!!.weather!!.currentWeather.summary)
                     summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
-                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
+                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + getResources().getString(R.string.wind_speed))
+                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + getResources().getString(R.string.percentage))
                     toolbarTitle.setText(city!!.location.city)
                     cityText.setText(city!!.location.city)
-                    temperatureText.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
+                    temperatureText.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconWeather, city!!.weather!!.currentWeather.icon, "medium")
                     //dailyWeatherList = city.weather!!.dailyWeather.days
                  })
@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity() {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ForecastUpdater.updateOnce()
                 } else {
-                    Toast.makeText(this, "Permission not granted!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.perrmision_not_granted), Toast.LENGTH_SHORT).show()
                 }
             }
         }

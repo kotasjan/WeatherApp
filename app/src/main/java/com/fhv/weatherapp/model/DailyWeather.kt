@@ -10,4 +10,5 @@ data class DailyWeather constructor(@NonNull var days: List<Entry>,
                                  @NonNull var icon: String,
                                  @NonNull var minTemperature: Double,
                                  @NonNull var maxTemperature: Double)
+
 }
