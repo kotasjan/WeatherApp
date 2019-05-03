@@ -1,6 +1,6 @@
 package com.fhv.weatherapp.model
 
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 
 data class HourlyWeather constructor(@NonNull var precipProbabilities: List<Entry>,
                                      @NonNull var temperatures: List<Entry>) {

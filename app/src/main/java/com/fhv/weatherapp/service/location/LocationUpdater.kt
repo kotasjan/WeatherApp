@@ -2,20 +2,30 @@ package com.fhv.weatherapp.service.location
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.IntentSender
 import android.location.*
+import android.location.LocationListener
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
 import java.io.IOException
 import java.util.*
+import androidx.lifecycle.ViewModelProviders
+import com.fhv.weatherapp.MainActivity
+import com.fhv.weatherapp.database.CityDatabase
+import com.fhv.weatherapp.repository.CityRepository
+import com.fhv.weatherapp.viewmodel.CityViewModel
 
 object LocationUpdater {
     var currentLocation: CurrentLocation? = null
     private lateinit var locationManager: LocationManager
-    private val TAG = "LocationUpdater"
+    private const val TAG = "LocationUpdater"
 
     @SuppressLint("MissingPermission")
     fun requestLocation(context: Context) {
@@ -32,64 +42,49 @@ object LocationUpdater {
 
                 override fun onLocationChanged(location: Location?) {
                     if (location != null) {
-
-                        val curloc = getLocationResult(location, context)
-
-                        if (curloc != null) {
-
-                            var including = false
-
-                            for (city in Common.cityList) {
-                                if (city.location.city == curloc.city) {
-                                    Common.lastCityIndex = Common.cityList.indexOf(city)
-                                    including = true
-                                    break
-                                }
-                            }
-
-                            if (!including) {
-                                Common.cityList.add(City(null, curloc))
-                                Common.lastCityIndex = Common.cityList.size - 1
-                            }
-
-                            currentLocation = curloc
-
-                            locationManager.removeUpdates(this)
-                        }
+                        processLocationResult(location, context)
+                        locationManager.removeUpdates(this)
                     }
                 }
             }, Looper.getMainLooper())
 
-            val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-            if (localNetworkLocation != null) {
-                val location: Location = localNetworkLocation
-                getLocationResult(location, context)
-
-                val curloc = getLocationResult(location, context)
-
-                if (curloc != null) {
-
-                    var including = false
-
-                    for (city in Common.cityList) {
-                        if (city.location.city == curloc.city) {
-                            Common.lastCityIndex = Common.cityList.indexOf(city)
-                            including = true
-                            break
-                        }
-                    }
-
-                    if (!including) {
-                        Common.cityList.add(City(null, curloc))
-                        Common.lastCityIndex = Common.cityList.size - 1
-                    }
-
-                    currentLocation = curloc
-                }
+            if (location != null) {
+                processLocationResult(location, context)
             }
         } else {
-            throw RuntimeException("Location permission not granted.")
+            askForEnableLocation(context)
+        }
+    }
+
+    private fun processLocationResult(location: Location, context: Context) {
+
+        val curLoc = getLocationResult(location, context)
+
+        if (curLoc != null) {
+
+            var including = false
+            val cities = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao()).getCities().value
+
+            for (city in cities!!.listIterator()) {
+                if (city.location.city == curLoc.city) {
+                    Common.lastCityIndex = cities.indexOf(city)
+                    including = true
+                    break
+                }
+            }
+
+            if (!including) {
+
+                ViewModelProviders.of(MainActivity.getActivity())
+                        .get(CityViewModel::class.java)
+                        .insert(City(null, curLoc))
+
+                Common.lastCityIndex = ViewModelProviders.of(MainActivity.getActivity()).get(CityViewModel::class.java).getCities()?.value!!.size - 1
+            }
+
+            currentLocation = curLoc
         }
     }
 
@@ -124,5 +119,25 @@ object LocationUpdater {
 
         Log.d(TAG, "City name was not found.")
         return ""
+    }
+
+    private fun askForEnableLocation(context: Context) {
+
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(LocationRequest())
+        val client: SettingsClient = LocationServices.getSettingsClient(context)
+        val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+
+        task.addOnSuccessListener { requestLocation(context) }
+
+        task.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException) {
+                try {
+                    exception.startResolutionForResult(MainActivity.getActivity(),
+                            Common.REQUEST_CHECK_SETTINGS)
+                } catch (sendEx: IntentSender.SendIntentException) {
+                    // Ignore the error.
+                }
+            }
+        }
     }
 }

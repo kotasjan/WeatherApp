@@ -2,9 +2,10 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.arch.lifecycle.ViewModelProviders
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -28,14 +29,26 @@ import android.webkit.WebViewClient
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProviders
 import com.fhv.weatherapp.adapters.DailyWeatherListAdapter
 import com.fhv.weatherapp.adapters.HeaderListAdapter
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
 import com.fhv.weatherapp.model.DailyWeather
+import com.fhv.weatherapp.database.CityDatabase
+import com.fhv.weatherapp.database.CityEntity
+import com.fhv.weatherapp.model.City
+import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.CityViewModel
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.list_view.*
 import org.joda.time.LocalDate
 import java.util.*
@@ -52,9 +65,14 @@ class MainActivity : AppCompatActivity() {
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
     private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
 
+    private lateinit var repository: CityRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        repository = CityRepository(CityDatabase.getDatabase(application)!!.cityDao())
+        activity = this
 
         // notify on no internet connection
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -63,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         // This has to be called always in first/main activity to load previously saved state
         SharedPrefs.initializeSharedPreferences(this)
 
-        if (Common.cityList.isEmpty()) {
+        if (repository.getCities().value.isNullOrEmpty()) {
             askForPermissionsAndUpdateWeather()
         } else {
             ForecastUpdater.startInBackground()
@@ -82,57 +100,53 @@ class MainActivity : AppCompatActivity() {
 
 
         //first card view
-        val temperatureMainView = findViewById(R.id.temperature_main_view) as TextView
-        val iconMainView = findViewById(R.id.icon_main_view) as WebView
-        val summaryMainView = findViewById(R.id.summary_main_view) as TextView
-        val summaryMainView2 = findViewById(R.id.summary_main_view2) as TextView
-        val iconWindy = findViewById(R.id.windy_icon) as WebView
-        val iconRainy = findViewById(R.id.rainy_icon) as WebView
-        val windSpeed = findViewById(R.id.wind_speed) as TextView
-        val rainProp = findViewById(R.id.rain_prop) as TextView
-        val toolbarTitle = findViewById(R.id.toolbar_title) as TextView
-
-
+        val temperatureMainView = findViewById<TextView>(R.id.temperature_main_view)
+        val iconMainView = findViewById<WebView>(R.id.icon_main_view)
+        val summaryMainView = findViewById<TextView>(R.id.summary_main_view)
+        val summaryMainView2 = findViewById<TextView>(R.id.summary_main_view2)
+        val iconWindy = findViewById<WebView>(R.id.windy_icon)
+        val iconRainy = findViewById<WebView>(R.id.rainy_icon)
+        val windSpeed = findViewById<TextView>(R.id.wind_speed)
+        val rainProp = findViewById<TextView>(R.id.rain_prop)
+        val toolbarTitle = findViewById<TextView>(R.id.toolbar_title)
 
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
-                .getCity()
-                .observe(this, android.arch.lifecycle.Observer { city ->
-                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
-                    prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
-                    summaryMainView.setText(city!!.weather!!.currentWeather.summary)
-                    summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
+                .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>>  { cityList ->
+                    if (cityList.isNullOrEmpty() || cityList.getOrNull(Common.lastCityIndex)?.weather==null) return@Observer
+
+                    temperatureMainView.text = Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.temperature!!).toString() + getResources().getString(R.string.degree_celcius)
+                    prepareIcon(iconMainView, cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.icon!!, "large")
+                    summaryMainView.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.summary!!
+                    summaryMainView2.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.summary!!
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + getResources().getString(R.string.wind_speed))
-                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + getResources().getString(R.string.percentage))
-                    toolbarTitle.setText(city!!.location.city)
-                    cityText.setText(city!!.location.city)
-                    temperatureText.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
-                    prepareIcon(iconWeather, city!!.weather!!.currentWeather.icon, "medium")
-                    //dailyWeatherList = city.weather!!.dailyWeather.days
-                 })
-
-
+                    windSpeed.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.windSpeed!!.toString() + getResources().getString(R.string.wind_speed)
+                    rainProp.text = (cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.precipProbability!! * 100).toInt().toString() + getResources().getString(R.string.percentage)
+                    toolbarTitle.text = cityList.getOrNull(Common.lastCityIndex)?.location?.city!!
+                    cityText.setText(cityList.getOrNull(Common.lastCityIndex)?.location.city!!)
+                    temperatureText.setText(Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
+                    prepareIcon(iconWeather, cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.icon, "medium")
+                    dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days
+                })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
-        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.repeatCount = ValueAnimator.INFINITE
         valueAnimator.interpolator = LinearInterpolator()
         valueAnimator.duration = 9000L
 
         valueAnimator.addUpdateListener{
             var progress =  it.animatedValue as Float
-            var width = summaryMainView.getWidth()
+            var width = summaryMainView.width
             var translationX = width * progress
-            summaryMainView.setTranslationX(-translationX)
-            summaryMainView2.setTranslationX(-(translationX - width))
+            summaryMainView.translationX = -translationX
+            summaryMainView2.translationX = -(translationX - width)
 
         }
-        valueAnimator.start();
+        valueAnimator.start()
 
-
-        val weatherCard = findViewById(R.id.weather_card) as CardView
+        val weatherCard = findViewById<CardView>(R.id.weather_card)
         weatherCard.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val intent = Intent(this@MainActivity, WeatherDetails::class.java)
@@ -140,33 +154,21 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
         // setting listener for get location button
         getWeatherButton.setOnClickListener { askForPermissionsAndUpdateWeather() }
 
-        toolbar = findViewById(R.id.toolbar) as Toolbar
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        getSupportActionBar()!!.setDisplayShowTitleEnabled(false)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
 
-        mDrawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        mDrawer = findViewById(R.id.drawer_layout)
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
 
-        listView = findViewById(R.id.list) as ListView
-        adapter = HeaderListAdapter(ArrayList(Common.cityList), applicationContext)
-        listView!!.setAdapter(adapter)
-
-
-
-        //mock data
-        dailyWeatherList.add(DailyWeather.Entry(1547164800, "wind", 6.0, 28.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547251200, "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547337600, "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547424000, "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547510400, "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547596800, "wind", 26.0, 8.0 ))
-        dailyWeatherList.add(DailyWeather.Entry(1547683200, "wind", 26.0, 8.0 ))
-
+        listView = findViewById(R.id.list)
+        val allCities = repository.getCities().value
+        adapter = HeaderListAdapter(if (allCities!=null) ArrayList(allCities) else ArrayList(), applicationContext)
+        listView!!.adapter = adapter
 
         var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)
         var dailyAdapter = DailyWeatherListAdapter(dailyWeatherList, applicationContext)
@@ -178,12 +180,16 @@ class MainActivity : AppCompatActivity() {
     // This method is called always before activity ends (usually to save activity state)
     override fun onStop() {
 
-        SharedPrefs.saveCityList()
         SharedPrefs.saveLastCityIndex()
 
         Log.d(Common.APP_NAME, "onStop")
 
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(broadcastReceiver)
+        super.onDestroy()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -234,6 +240,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, getString(R.string.perrmision_not_granted), Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    companion object ActivityHolder {
+        private var activity : AppCompatActivity? = null
+
+        fun getActivity() : AppCompatActivity {
+            return activity!!
         }
     }
 }

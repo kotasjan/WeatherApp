@@ -1,7 +1,6 @@
 package com.fhv.weatherapp.model
 
-import android.support.annotation.NonNull
-import org.joda.time.LocalDate
+import androidx.annotation.NonNull
 
 data class DailyWeather constructor(@NonNull var days: List<Entry>,
                                     @NonNull var summary: String) {

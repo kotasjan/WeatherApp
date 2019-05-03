@@ -9,9 +9,9 @@ object Common {
     internal const val REQUEST_CHECK_SETTINGS = 0x1
 
     // list of all used cities
-    @JvmStatic var cityList: MutableList<City> = arrayListOf()
+    // @JvmStatic var cityList: MutableList<City> = arrayListOf()
 
     // index of the city which was displayed the last
-    @JvmStatic var lastCityIndex: Int = 0
+    @JvmStatic var lastCityIndex: Int =0
 
 }

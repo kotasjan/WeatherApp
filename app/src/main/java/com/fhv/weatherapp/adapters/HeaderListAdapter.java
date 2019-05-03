@@ -13,7 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fhv.weatherapp.MainActivity;
 import com.fhv.weatherapp.R;
+import com.fhv.weatherapp.common.Common;
 import com.fhv.weatherapp.model.City;
 
 import java.util.ArrayList;
@@ -53,9 +55,9 @@ public class HeaderListAdapter extends ArrayAdapter<City> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item, parent, false);
-            viewHolder.txtLocation = (TextView) convertView.findViewById(R.id.location);
-            viewHolder.txtDegree = (TextView) convertView.findViewById(R.id.celcius_degree);
-            viewHolder.icon = (WebView) convertView.findViewById(R.id.icon);
+            viewHolder.txtLocation = convertView.findViewById(R.id.location);
+            viewHolder.txtDegree = convertView.findViewById(R.id.celcius_degree);
+            viewHolder.icon = convertView.findViewById(R.id.icon);
             result = convertView;
 
             convertView.setTag(viewHolder);
@@ -69,8 +71,12 @@ public class HeaderListAdapter extends ArrayAdapter<City> {
         lastPosition = position;
 
         viewHolder.txtLocation.setText(dataModel.getLocation().getCity());
-        viewHolder.txtDegree.setText(String.valueOf((int)dataModel.getWeather().getCurrentWeather().getTemperature() + " \u2103"));
-        prepareIcon(viewHolder.icon, dataModel.getWeather().getCurrentWeather().getIcon());
+
+        if (dataModel.getWeather() != null) {
+            viewHolder.txtDegree.setText(String.valueOf((int)dataModel.getWeather().getCurrentWeather().getTemperature() + " \u2103"));
+            prepareIcon(viewHolder.icon, dataModel.getWeather().getCurrentWeather().getIcon());
+        }
+
         return convertView;
     }
 

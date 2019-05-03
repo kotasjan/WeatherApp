@@ -1,6 +1,6 @@
 package com.fhv.weatherapp.model
 
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 
 data class DetailedCurrentWeather constructor(@NonNull var currentWeather: CurrentWeather,
                                               @NonNull var apparentTemperature: Double,
