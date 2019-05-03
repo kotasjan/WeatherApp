@@ -24,4 +24,13 @@
     <string name="in_string">" in "</string>
     <string name="hours_is_going_to_rain">" hours is going to rain "</string>
     <string name="so_better_take_umbrella">" so better take an umbrella."</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="no_day">No day</string>
+
 </resources>

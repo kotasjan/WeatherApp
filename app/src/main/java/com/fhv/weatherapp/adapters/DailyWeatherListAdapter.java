@@ -20,7 +20,10 @@ import com.fhv.weatherapp.R;
 import com.fhv.weatherapp.model.DailyWeather;
 import com.fhv.weatherapp.model.Details;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherListAdapter.MyViewHolder> {
@@ -45,7 +48,7 @@ public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherLi
     public void onBindViewHolder(MyViewHolder viewHolder, int i) {
         DailyWeather.Entry data = dataSet.get(i);
         viewHolder.minMaxTemp.setText(String.valueOf(data.getMaxTemperature() + " \u2103" + " / " + data.getMinTemperature() + " \u2103"));
-        viewHolder.day.setText(String.valueOf(data.getDate().toString()));
+        viewHolder.day.setText(getStringDay(LocalDate.fromDateFields(new Date(data.getDate() * 1000)).getDayOfWeek()));
         prepareIcon(viewHolder.icon, data.getIcon());
         setAnimation(viewHolder.parent, i);
     }
@@ -75,8 +78,7 @@ public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherLi
         return position;
     }
 
-    private void setAnimation(View viewToAnimate, int position)
-    {
+    private void setAnimation(View viewToAnimate, int position) {
         if (position > lastPosition)
         {
             Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
@@ -84,6 +86,31 @@ public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherLi
             lastPosition = position;
         }
     }
+
+    private String getStringDay(int day) {
+        switch (day) {
+            case 1:
+                return context.getString(R.string.monday);
+            case 2:
+                return context.getString(R.string.tuesday);
+            case 3:
+                return context.getString(R.string.wednesday);
+            case 4:
+                return context.getString(R.string.thursday);
+            case 5:
+                return context.getString(R.string.friday);
+            case 6:
+                return context.getString(R.string.saturday);
+            case 7:
+                return context.getString(R.string.sunday);
+            default:
+                return context.getString(R.string.no_day);
+        }
+    }
+
+
+
+
 
     @SuppressLint("SetJavaScriptEnabled")
     private void prepareIcon(WebView icon, final String weatherIconType) {

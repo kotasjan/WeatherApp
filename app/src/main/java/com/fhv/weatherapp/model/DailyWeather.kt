@@ -6,7 +6,7 @@ import org.joda.time.LocalDate
 data class DailyWeather constructor(@NonNull var days: List<Entry>,
                                     @NonNull var summary: String) {
 
-    data class Entry constructor(@NonNull var date: LocalDate,
+    data class Entry constructor(@NonNull var date: Long,
                                  @NonNull var icon: String,
                                  @NonNull var minTemperature: Double,
                                  @NonNull var maxTemperature: Double)
