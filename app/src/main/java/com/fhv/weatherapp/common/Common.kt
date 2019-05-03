@@ -1,7 +1,5 @@
 package com.fhv.weatherapp.common
 
-import com.fhv.weatherapp.model.City
-
 object Common {
 
     internal const val APP_NAME = "WeatherApp"
@@ -12,6 +10,6 @@ object Common {
     // @JvmStatic var cityList: MutableList<City> = arrayListOf()
 
     // index of the city which was displayed the last
-    @JvmStatic var lastCityIndex: Int =0
+    @JvmStatic var lastCityIndex: Int = 0
 
 }

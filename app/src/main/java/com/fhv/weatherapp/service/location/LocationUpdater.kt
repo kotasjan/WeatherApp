@@ -8,6 +8,7 @@ import android.location.LocationListener
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.model.City
 import com.fhv.weatherapp.model.CurrentLocation
@@ -65,9 +66,9 @@ object LocationUpdater {
         if (curLoc != null) {
 
             var including = false
-            val cities = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao()).getCities().value
+            val cities = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao()).getCities()
 
-            for (city in cities!!.listIterator()) {
+            for (city in cities.listIterator()) {
                 if (city.location.city == curLoc.city) {
                     Common.lastCityIndex = cities.indexOf(city)
                     including = true
@@ -81,7 +82,8 @@ object LocationUpdater {
                         .get(CityViewModel::class.java)
                         .insert(City(null, curLoc))
 
-                Common.lastCityIndex = ViewModelProviders.of(MainActivity.getActivity()).get(CityViewModel::class.java).getCities()?.value!!.size - 1
+                val gotCityList: List<City> = ViewModelProviders.of(MainActivity.getActivity()).get(CityViewModel::class.java).getCities()?.value!!
+                if(gotCityList.isNotEmpty()) Common.lastCityIndex = gotCityList.size - 1
             }
 
             currentLocation = curLoc

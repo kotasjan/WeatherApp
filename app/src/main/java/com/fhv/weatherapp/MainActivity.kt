@@ -2,25 +2,14 @@ package com.fhv.weatherapp
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.LayoutManager
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -33,26 +22,23 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat.startActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.fhv.weatherapp.adapters.DailyWeatherListAdapter
 import com.fhv.weatherapp.adapters.HeaderListAdapter
 import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.common.SharedPrefs
-import com.fhv.weatherapp.model.DailyWeather
 import com.fhv.weatherapp.database.CityDatabase
-import com.fhv.weatherapp.database.CityEntity
 import com.fhv.weatherapp.model.City
+import com.fhv.weatherapp.model.DailyWeather
 import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.viewmodel.CityViewModel
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.list_view.*
-import org.joda.time.LocalDate
-import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -81,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         // This has to be called always in first/main activity to load previously saved state
         SharedPrefs.initializeSharedPreferences(this)
 
-        if (repository.getCities().value.isNullOrEmpty()) {
+        if (repository.getCities().isNullOrEmpty()) {
             askForPermissionsAndUpdateWeather()
         } else {
             ForecastUpdater.startInBackground()
@@ -125,10 +111,10 @@ class MainActivity : AppCompatActivity() {
                     windSpeed.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.windSpeed!!.toString() + getResources().getString(R.string.wind_speed)
                     rainProp.text = (cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.precipProbability!! * 100).toInt().toString() + getResources().getString(R.string.percentage)
                     toolbarTitle.text = cityList.getOrNull(Common.lastCityIndex)?.location?.city!!
-                    cityText.setText(cityList.getOrNull(Common.lastCityIndex)?.location.city!!)
+                    cityText.setText(cityList.getOrNull(Common.lastCityIndex)?.location!!.city!!)
                     temperatureText.setText(Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconWeather, cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.icon, "medium")
-                    dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days
+                    dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days as ArrayList<DailyWeather.Entry>
                 })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
@@ -166,8 +152,8 @@ class MainActivity : AppCompatActivity() {
         mDrawer!!.addDrawerListener(drawerToggle)
 
         listView = findViewById(R.id.list)
-        val allCities = repository.getCities().value
-        adapter = HeaderListAdapter(if (allCities!=null) ArrayList(allCities) else ArrayList(), applicationContext)
+        val allCities = repository.getCities()
+        adapter = HeaderListAdapter(ArrayList(allCities), applicationContext)
         listView!!.adapter = adapter
 
         var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)
@@ -181,13 +167,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
 
         SharedPrefs.saveLastCityIndex()
-
         Log.d(Common.APP_NAME, "onStop")
 
         super.onStop()
     }
 
     override fun onDestroy() {
+
+        SharedPrefs.saveLastCityIndex()
         unregisterReceiver(broadcastReceiver)
         super.onDestroy()
     }

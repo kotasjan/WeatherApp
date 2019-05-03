@@ -1,9 +1,7 @@
 package com.fhv.weatherapp.adapters;
-;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,20 +9,21 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fhv.weatherapp.R;
 import com.fhv.weatherapp.model.DailyWeather;
-import com.fhv.weatherapp.model.Details;
 
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+;
 
 public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherListAdapter.MyViewHolder> {
 
