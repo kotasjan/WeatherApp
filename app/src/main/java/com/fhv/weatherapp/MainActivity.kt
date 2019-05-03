@@ -48,11 +48,10 @@ class MainActivity : AppCompatActivity() {
     private var navigationView: NavigationView? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var listView: ListView? = null
-
     private var adapter: HeaderListAdapter? = null
-
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
     private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,11 +77,8 @@ class MainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
-        cityText.setText("Current location")
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
-        temperatureText.setText("24")
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
-        prepareIcon(iconWeather, "fog", "medium")
 
 
         //first card view
@@ -112,6 +108,9 @@ class MainActivity : AppCompatActivity() {
                     windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
                     rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
                     toolbarTitle.setText(city!!.location.city)
+                    cityText.setText(city!!.location.city)
+                    temperatureText.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
+                    prepareIcon(iconWeather, city!!.weather!!.currentWeather.icon, "medium")
                     //dailyWeatherList = city.weather!!.dailyWeather.days
                  })
 
