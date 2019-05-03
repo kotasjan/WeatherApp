@@ -47,7 +47,7 @@ public class DailyWeatherListAdapter extends RecyclerView.Adapter<DailyWeatherLi
     @Override
     public void onBindViewHolder(MyViewHolder viewHolder, int i) {
         DailyWeather.Entry data = dataSet.get(i);
-        viewHolder.minMaxTemp.setText(String.valueOf(data.getMaxTemperature() + " \u2103" + " / " + data.getMinTemperature() + " \u2103"));
+        viewHolder.minMaxTemp.setText(String.valueOf((int)data.getMaxTemperature() + " \u2103" + " / " + (int)data.getMinTemperature() + " \u2103"));
         viewHolder.day.setText(getStringDay(LocalDate.fromDateFields(new Date(data.getDate() * 1000)).getDayOfWeek()));
         prepareIcon(viewHolder.icon, data.getIcon());
         setAnimation(viewHolder.parent, i);

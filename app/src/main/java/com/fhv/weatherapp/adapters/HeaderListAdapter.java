@@ -69,7 +69,7 @@ public class HeaderListAdapter extends ArrayAdapter<City> {
         lastPosition = position;
 
         viewHolder.txtLocation.setText(dataModel.getLocation().getCity());
-        viewHolder.txtDegree.setText(String.valueOf(dataModel.getWeather().getCurrentWeather().getTemperature()));
+        viewHolder.txtDegree.setText(String.valueOf((int)dataModel.getWeather().getCurrentWeather().getTemperature() + " \u2103"));
         prepareIcon(viewHolder.icon, dataModel.getWeather().getCurrentWeather().getIcon());
         return convertView;
     }
