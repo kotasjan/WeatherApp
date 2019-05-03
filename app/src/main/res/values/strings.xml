@@ -20,8 +20,8 @@
     <string name="no_internet">NO INTERNET</string>
     <string name="no_internet_message">There will be no forecast because there is no internet connection</string>
     <string name="im_sure_that">"I\'m sure that "</string>
-    <string name="right_now_is_going_to_rain">right now is going to rain</string>
-    <string name="in_string">" in"</string>
-    <string name="hours_is_going_to_rain">" hours is going to rain"</string>
+    <string name="right_now_is_going_to_rain">"right now is going to rain "</string>
+    <string name="in_string">" in "</string>
+    <string name="hours_is_going_to_rain">" hours is going to rain "</string>
     <string name="so_better_take_umbrella">" so better take an umbrella."</string>
 </resources>
