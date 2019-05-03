@@ -36,17 +36,17 @@ class WeatherDetails : FragmentActivity() {
                 .getCity()
                 .observe(this, android.arch.lifecycle.Observer { city ->
                     toolbarTitle.text = city!!.location.city
-                    temperatureDetails.text = Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103"
+                    temperatureDetails.text = Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius)
                     summaryDetail.text = city!!.weather!!.currentWeather.summary
                     prepareIcon(iconDetails, city!!.weather!!.currentWeather.icon)
-                    dataModels.add(Details("Apparental temp.", Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103"))
-                    dataModels.add(Details("Probability of rain", (city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("Humidity", (city!!.weather!!.detailedCurrentWeather.humidity * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("Pressure", Math.round(city!!.weather!!.detailedCurrentWeather.pressure).toString() + " Pa"))
-                    dataModels.add(Details("Wind speed", city!!.weather!!.currentWeather.windSpeed.toString() + " m/s"))
-                    dataModels.add(Details("Cloud cover", (city!!.weather!!.detailedCurrentWeather.cloudCover * 100).toInt().toString() + "%"))
-                    dataModels.add(Details("UV index", city!!.weather!!.detailedCurrentWeather.uvIndex.toInt().toString()))
-                    dataModels.add(Details("Ozone", Math.round(city!!.weather!!.detailedCurrentWeather.ozone).toString() + " DU"))
+                    dataModels.add(Details(getResources().getString(R.string.apparental_temp), Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius)))
+                    dataModels.add(Details(getResources().getString(R.string.propability_of_rain), (city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + getResources().getString(R.string.percentage)))
+                    dataModels.add(Details(getResources().getString(R.string.humidity), (city!!.weather!!.detailedCurrentWeather.humidity * 100).toInt().toString() + getResources().getString(R.string.percentage)))
+                    dataModels.add(Details(getResources().getString(R.string.pressure_string), Math.round(city!!.weather!!.detailedCurrentWeather.pressure).toString() + getResources().getString(R.string.pressure_unit)))
+                    dataModels.add(Details(getResources().getString(R.string.wind_speed_string), city!!.weather!!.currentWeather.windSpeed.toString() + getResources().getString(R.string.wind_speed)))
+                    dataModels.add(Details(getResources().getString(R.string.cloud_cover), (city!!.weather!!.detailedCurrentWeather.cloudCover * 100).toInt().toString() + getResources().getString(R.string.percentage)))
+                    dataModels.add(Details(getResources().getString(R.string.uv_index), city!!.weather!!.detailedCurrentWeather.uvIndex.toInt().toString()))
+                    dataModels.add(Details(getResources().getString(R.string.ozone_string), Math.round(city!!.weather!!.detailedCurrentWeather.ozone).toString() + getResources().getString(R.string.ozone_unit)))
                     adapter = DetailsListAdapter(dataModels, applicationContext)
                     listView!!.setAdapter(adapter)
                 })

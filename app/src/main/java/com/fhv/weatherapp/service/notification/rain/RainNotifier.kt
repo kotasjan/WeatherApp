@@ -2,6 +2,7 @@ package com.fhv.weatherapp.service.notification.rain
 
 import android.content.Context
 import android.util.Log
+import com.fhv.weatherapp.R
 import com.fhv.weatherapp.model.Weather
 import com.fhv.weatherapp.service.notification.sendNotification
 
@@ -17,7 +18,7 @@ object RainNotifier {
 
     fun notifyOfRainIfNecessary(context: Context, weather: Weather) {
         var rainy = false
-        val notificationText = StringBuilder("I'm sure that ")
+        val notificationText = StringBuilder(context.getString(R.string.im_sure_that))
 
         val currentRain = weather.currentWeather.precipProbability
         Log.d(TAG, "Current rain probability: $currentRain")
@@ -26,7 +27,7 @@ object RainNotifier {
         if (currentRain > condition.getCurrentRainProbabilityThreshold()) {
             rainy = true
             val percent = currentRain * 100
-            notificationText.append("right now is going to rain ($percent%), ")
+            notificationText.append(context.getString(R.string.right_now_is_going_to_rain) + percent.toString())
         }
 
         val hourlyRains = weather.hourlyWeather.precipProbabilities
@@ -41,13 +42,13 @@ object RainNotifier {
             if (probability > threshold) {
                 rainy = true
                 val percent = currentRain * 100
-                notificationText.append("in $hour hours is going to rain ($percent%), ")
+                notificationText.append(context.getString(R.string.in_string) + hour.toString() + context.getString(R.string.hours_is_going_to_rain) + percent.toString())
             }
         }
 
         if (rainy) {
             Log.i(TAG, "Sending rain notification")
-            notificationText.append("so better take an umbrella.")
+            notificationText.append(context.getString(R.string.so_better_take_umbrella))
             sendNotification(context, "RAIN!", notificationText.toString())
         }
     }

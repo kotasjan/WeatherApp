@@ -48,11 +48,10 @@ class MainActivity : AppCompatActivity() {
     private var navigationView: NavigationView? = null
     private lateinit var drawerToggle: ActionBarDrawerToggle
     private var listView: ListView? = null
-
     private var adapter: HeaderListAdapter? = null
-
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
     private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,11 +77,8 @@ class MainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
-        cityText.setText("Current location")
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
-        temperatureText.setText("24")
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
-        prepareIcon(iconWeather, "fog", "medium")
 
 
         //first card view
@@ -103,15 +99,18 @@ class MainActivity : AppCompatActivity() {
                 .get(CityViewModel::class.java)
                 .getCity()
                 .observe(this, android.arch.lifecycle.Observer { city ->
-                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + " \u2103")
+                    temperatureMainView.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconMainView, city!!.weather!!.currentWeather.icon, "large")
                     summaryMainView.setText(city!!.weather!!.currentWeather.summary)
                     summaryMainView2.setText(city!!.weather!!.currentWeather.summary)
                     prepareIcon(iconWindy, "wind", "tiny")
                     prepareIcon(iconRainy, "rain", "tiny")
-                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + " m/s")
-                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + "%")
+                    windSpeed.setText(city!!.weather!!.currentWeather.windSpeed.toString() + getResources().getString(R.string.wind_speed))
+                    rainProp.setText((city!!.weather!!.currentWeather.precipProbability * 100).toInt().toString() + getResources().getString(R.string.percentage))
                     toolbarTitle.setText(city!!.location.city)
+                    cityText.setText(city!!.location.city)
+                    temperatureText.setText(Math.round(city!!.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
+                    prepareIcon(iconWeather, city!!.weather!!.currentWeather.icon, "medium")
                     //dailyWeatherList = city.weather!!.dailyWeather.days
                  })
 
@@ -232,7 +231,7 @@ class MainActivity : AppCompatActivity() {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ForecastUpdater.updateOnce()
                 } else {
-                    Toast.makeText(this, "Permission not granted!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.perrmision_not_granted), Toast.LENGTH_SHORT).show()
                 }
             }
         }

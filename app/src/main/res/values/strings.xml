@@ -3,4 +3,25 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="title_activity_weather_details">WeatherDetails</string>
+    <string name="degree_celcius">" \u2103"</string>
+    <string name="wind_speed">" m/s"</string>
+    <string name="percentage">%</string>
+    <string name="ozone_unit">" DU"</string>
+    <string name="pressure_unit">" Pa"</string>
+    <string name="apparental_temp">Apparental temp.</string>
+    <string name="propability_of_rain">Probability of rain</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind_speed_string">Wind speed</string>
+    <string name="pressure_string">Pressure</string>
+    <string name="cloud_cover">Cloud cover</string>
+    <string name="uv_index">UV index</string>
+    <string name="ozone_string">Ozone</string>
+    <string name="perrmision_not_granted">Permission not granted!</string>
+    <string name="no_internet">NO INTERNET</string>
+    <string name="no_internet_message">There will be no forecast because there is no internet connection</string>
+    <string name="im_sure_that">"I\'m sure that "</string>
+    <string name="right_now_is_going_to_rain">"right now is going to rain "</string>
+    <string name="in_string">" in "</string>
+    <string name="hours_is_going_to_rain">" hours is going to rain "</string>
+    <string name="so_better_take_umbrella">" so better take an umbrella."</string>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.util.Log
+import com.fhv.weatherapp.R
 import com.fhv.weatherapp.service.notification.sendNotification
 
 
@@ -14,7 +15,7 @@ class NetworkBroadcastReceiver : BroadcastReceiver() {
         Log.d(TAG, "Received broadcast.")
         if (!isOnline(context!!)) {
             Log.d(TAG, "No connection - sending notification")
-            sendNotification(context, "NO INTERNET", "There will be no forecast because there is no internet connection")
+            sendNotification(context, context.getString(R.string.no_internet), context.getString(R.string.no_internet_message))
         }
     }
 

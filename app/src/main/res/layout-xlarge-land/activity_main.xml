@@ -31,11 +31,11 @@
                         layout="@layout/card_view_weather"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+                    <include
+                        layout="@layout/daily_weather_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
-                <!--<TextView
-                    android:id="@+id/info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" /> -->
             </FrameLayout>
         </ScrollView>
     </LinearLayout>
