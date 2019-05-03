@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -23,6 +24,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProviders
 import com.fhv.weatherapp.adapters.HeaderListAdapter
@@ -100,14 +102,11 @@ class MainActivity : AppCompatActivity() {
         val toolbarTitle = findViewById<TextView>(R.id.toolbar_title)
 
 
-
-
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
                 .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>>  { cityList ->
-                    if (cityList.isNullOrEmpty()) {
-                        return@Observer
-                    }
+                    if (cityList.isNullOrEmpty() || cityList.getOrNull(Common.lastCityIndex)?.weather==null) return@Observer
+
                     temperatureMainView.text = Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.temperature!!).toString() + " \u2103"
                     prepareIcon(iconMainView, cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.icon!!, "large")
                     summaryMainView.text = cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.summary!!
@@ -134,7 +133,6 @@ class MainActivity : AppCompatActivity() {
         }
         valueAnimator.start()
 
-
         val weatherCard = findViewById<CardView>(R.id.weather_card)
         weatherCard.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
@@ -142,7 +140,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         })
-
 
         // setting listener for get location button
         getWeatherButton.setOnClickListener { askForPermissionsAndUpdateWeather() }

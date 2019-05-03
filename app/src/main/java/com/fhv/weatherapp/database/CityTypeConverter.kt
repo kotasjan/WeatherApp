@@ -5,14 +5,17 @@ import com.fhv.weatherapp.model.City
 import com.google.gson.Gson
 
 class CityTypeConverter {
+    companion object {
+        @TypeConverter
+        @JvmStatic
+        fun cityFromString(value: String?): City? {
+           return if (value == null) null else Gson().fromJson<City>(value, City::class.java)
+        }
 
-    @TypeConverter
-    fun fromString(value: String?): City? {
-        return if (value == null) null else Gson().fromJson<City>(value, City::class.java)
-    }
-
-    @TypeConverter
-    fun cityToString(city: City?): String? {
-        return Gson().toJson(city)
+        @TypeConverter
+        @JvmStatic
+        fun cityToString(city: City?): String? {
+            return Gson().toJson(city)
+        }
     }
 }

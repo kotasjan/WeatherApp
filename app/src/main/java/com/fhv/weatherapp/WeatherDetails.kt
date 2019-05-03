@@ -31,12 +31,14 @@ class WeatherDetails : FragmentActivity() {
         val temperatureDetails = findViewById<TextView>(R.id.details_temperature)
         val iconDetails = findViewById<WebView>(R.id.details_icon)
         val summaryDetail = findViewById<TextView>(R.id.detail_summary)
-        listView = findViewById(R.id.list_details)
+        listView = findViewById<ListView>(R.id.list_details)
         val dataModels = ArrayList<Details>()
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
                 .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>> { cityList ->
+                    if (cityList.isNullOrEmpty() || cityList.getOrNull(Common.lastCityIndex)?.weather==null) return@Observer
+
                     toolbarTitle.text = cityList[Common.lastCityIndex].location.city
                     temperatureDetails.text = Math.round(cityList[Common.lastCityIndex].weather!!.currentWeather.temperature).toString() + " \u2103"
                     summaryDetail.text = cityList[Common.lastCityIndex].weather!!.currentWeather.summary

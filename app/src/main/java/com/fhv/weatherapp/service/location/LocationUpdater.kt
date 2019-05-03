@@ -1,7 +1,6 @@
 package com.fhv.weatherapp.service.location
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.IntentSender
 import android.location.*
@@ -17,15 +16,16 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import java.io.IOException
 import java.util.*
-import android.content.ContextWrapper
+import androidx.lifecycle.ViewModelProviders
 import com.fhv.weatherapp.MainActivity
 import com.fhv.weatherapp.database.CityDatabase
 import com.fhv.weatherapp.repository.CityRepository
+import com.fhv.weatherapp.viewmodel.CityViewModel
 
 object LocationUpdater {
     var currentLocation: CurrentLocation? = null
     private lateinit var locationManager: LocationManager
-    private val TAG = "LocationUpdater"
+    private const val TAG = "LocationUpdater"
 
     @SuppressLint("MissingPermission")
     fun requestLocation(context: Context) {
@@ -42,70 +42,49 @@ object LocationUpdater {
 
                 override fun onLocationChanged(location: Location?) {
                     if (location != null) {
-
-                        val curloc = getLocationResult(location, context)
-
-                        if (curloc != null) {
-
-                            var including = false
-
-                            val cityRepository = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao())
-
-                            for (city in cityRepository.getCities().value!!.listIterator()) {
-                                if (city.location.city == curloc.city) {
-                                    Common.lastCityIndex = cityRepository.getCities().value!!.indexOf(city)
-                                    including = true
-                                    break
-                                }
-                            }
-
-                            if (!including) {
-                                //Common.cityList.add(City(null, curloc))
-                                cityRepository.insert(City(null, curloc))
-                                Common.lastCityIndex = cityRepository.getCities().value!!.size - 1
-                            }
-
-                            currentLocation = curloc
-
-                            locationManager.removeUpdates(this)
-                        }
+                        processLocationResult(location, context)
+                        locationManager.removeUpdates(this)
                     }
                 }
             }, Looper.getMainLooper())
 
-            val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-            if (localNetworkLocation != null) {
-                val location: Location = localNetworkLocation
-                getLocationResult(location, context)
-
-                val curloc = getLocationResult(location, context)
-
-                if (curloc != null) {
-
-                    var including = false
-
-                    val cityRepository = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao())
-
-                    for (city in cityRepository.getCities().value!!.listIterator()) {
-                        if (city.location.city == curloc.city) {
-                            Common.lastCityIndex = cityRepository.getCities().value!!.indexOf(city)
-                            including = true
-                            break
-                        }
-                    }
-
-                    if (!including) {
-                        //Common.cityList.add(City(null, curloc))
-                        cityRepository.insert(City(null, curloc))
-                        Common.lastCityIndex = cityRepository.getCities().value!!.size - 1
-                    }
-
-                    currentLocation = curloc
-                }
+            if (location != null) {
+                processLocationResult(location, context)
             }
         } else {
             askForEnableLocation(context)
+        }
+    }
+
+    private fun processLocationResult(location: Location, context: Context) {
+
+        val curLoc = getLocationResult(location, context)
+
+        if (curLoc != null) {
+
+            var including = false
+            val cities = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao()).getCities().value
+
+            for (city in cities!!.listIterator()) {
+                if (city.location.city == curLoc.city) {
+                    Common.lastCityIndex = cities.indexOf(city)
+                    including = true
+                    break
+                }
+            }
+
+            if (!including) {
+
+                ViewModelProviders.of(MainActivity.getActivity())
+                        .get(CityViewModel::class.java)
+                        .insert(City(null, curLoc))
+
+                Common.lastCityIndex = ViewModelProviders.of(MainActivity.getActivity()).get(CityViewModel::class.java).getCities()?.value!!.size - 1
+            }
+
+            currentLocation = curLoc
         }
     }
 

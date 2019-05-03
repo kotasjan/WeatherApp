@@ -8,7 +8,7 @@ import com.fhv.weatherapp.model.City
 @Entity(tableName = "city_table")
 data class CityEntity (
     @PrimaryKey
-
+    val id : String,
     @TypeConverters(City::class)
     val city: City
     )

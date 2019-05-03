@@ -1,8 +1,10 @@
 package com.fhv.weatherapp.service.weatherupdater
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
+import androidx.lifecycle.ViewModelProviders
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.fhv.weatherapp.MainActivity
@@ -21,8 +23,8 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
     private val TAG = "ForecastUpdateWorker"
     private val forecastRequester = ForecastRequester(appContext)
-    private lateinit var cityRepository: CityRepository
 
+    @SuppressLint("WrongThread")
     override fun doWork(): Result {
         Log.d(TAG, "Start work on update weather")
         return try {
@@ -50,8 +52,9 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
             Log.i(TAG, "Successfully retrieved forecast")
             Log.d(TAG, "Resulting city: $city")
 
-            cityRepository = CityRepository(CityDatabase.getDatabase(MainActivity.getActivity())!!.cityDao())
-            cityRepository.insert(city)
+            ViewModelProviders.of(MainActivity.getActivity())
+                    .get(CityViewModel::class.java)
+                    .insert(city)
 
             // FIXME PIOTR P
 //            Log.d(TAG, "Will send notification if necessary.")

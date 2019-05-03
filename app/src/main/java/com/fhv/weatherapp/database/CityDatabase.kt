@@ -6,27 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [CityEntity::class], version = 2)
+@Database(entities = [CityEntity::class], version = 1)
 @TypeConverters(CityTypeConverter::class)
 abstract class CityDatabase : RoomDatabase() {
 
     abstract fun cityDao(): CityDao
 
     companion object {
-        var INSTANCE: CityDatabase? = null
+        @Volatile
+        private var INSTANCE: CityDatabase? = null
 
         fun getDatabase(context: Context): CityDatabase? {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        CityDatabase::class.java,
-                        "city_database"
-                ).fallbackToDestructiveMigration().build()
-
-                INSTANCE = instance
-                // return instance
-                instance
+            if (INSTANCE == null){
+                synchronized(CityDatabase::class){
+                    INSTANCE = Room.databaseBuilder(context.applicationContext, CityDatabase::class.java, "myDB").build()
+                }
             }
+            return INSTANCE
         }
     }
 }

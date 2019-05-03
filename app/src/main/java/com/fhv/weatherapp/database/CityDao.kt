@@ -1,20 +1,18 @@
 package com.fhv.weatherapp.database
 
-
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface CityDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCity(city: CityEntity)
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(city: CityEntity)
 
     @Delete
-    fun deleteCity(city: CityEntity)
+    fun delete(city: CityEntity)
 
     @Query("DELETE FROM city_table")
     fun deleteAll()
 
     @Query("SELECT * FROM city_table")
-    fun getCities(): LiveData<List<CityEntity>>
+    fun getCities(): List<CityEntity>
 }
