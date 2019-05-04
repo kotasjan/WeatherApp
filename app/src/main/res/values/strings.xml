@@ -32,4 +32,6 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
     <string name="no_day">No day</string>
+    <string name="temperature">Temperature</string>
+    <string name="rain_probability">Rain probability</string>
 </resources>

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -36,8 +37,10 @@ import com.fhv.weatherapp.model.DailyWeather
 import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
+import com.fhv.weatherapp.view.graph.ForecastGraphHandler
 import com.fhv.weatherapp.viewmodel.CityViewModel
 import com.google.android.material.navigation.NavigationView
+import com.github.mikephil.charting.charts.BarChart
 import kotlinx.android.synthetic.main.list_view.*
 
 class MainActivity : AppCompatActivity() {
@@ -96,6 +99,17 @@ class MainActivity : AppCompatActivity() {
         val rainProp = findViewById<TextView>(R.id.rain_prop)
         val toolbarTitle = findViewById<TextView>(R.id.toolbar_title)
 
+        // second card - hourly graphs
+        val graph = findViewById<BarChart>(R.id.graph)
+        val changeTypeTextView = findViewById<TextView>(R.id.change_graph_type_tv)
+        val changeGraphTypeButton = findViewById<ImageButton>(R.id.button_graph)
+        val graphHandler = ForecastGraphHandler(graph)
+        changeGraphTypeButton.setOnClickListener { view ->
+            graphHandler.changeGraphType()
+            changeTypeTextView.text = graphHandler.graphStateAsString
+        }
+
+
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
@@ -115,6 +129,8 @@ class MainActivity : AppCompatActivity() {
                     temperatureText.setText(Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconWeather, cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.icon, "medium")
                     dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days as ArrayList<DailyWeather.Entry>
+                    // update graphs
+                    graphHandler.updateData(city!!.weather!!.hourlyWeather)
                 })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)

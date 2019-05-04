@@ -2,7 +2,6 @@ package com.fhv.weatherapp.service.weatherupdater
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.ViewModelProviders
 import androidx.work.Worker
@@ -12,8 +11,8 @@ import com.fhv.weatherapp.common.Common
 import com.fhv.weatherapp.database.CityDatabase
 import com.fhv.weatherapp.database.CityEntity
 import com.fhv.weatherapp.model.City
+import com.fhv.weatherapp.model.CurrentLocation
 import com.fhv.weatherapp.repository.CityRepository
-import com.fhv.weatherapp.service.location.LocationUpdater
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
 import com.fhv.weatherapp.service.weatherupdater.web.parseJsonToWeather
