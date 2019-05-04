@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     private var listView: ListView? = null
     private var adapter: HeaderListAdapter? = null
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
-    private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
 
 
     private lateinit var repository: CityRepository
@@ -84,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         /* setting listener for get location button
         btn_get_location.setOnClickListener { getLocationListener() }*/
 
-        //header filled with mock data
+        //header menu view
         navigationView = findViewById(R.id.nvView) as NavigationView
         val headerLayout = navigationView!!.getHeaderView(0)
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
@@ -113,6 +112,11 @@ class MainActivity : AppCompatActivity() {
             changeTypeTextView.text = graphHandler.graphStateAsString
         }
 
+        //third card view
+        var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)
+        val manager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        listDailyView!!.setLayoutManager(manager)
+
 
 
         ViewModelProviders.of(this)
@@ -132,7 +136,8 @@ class MainActivity : AppCompatActivity() {
                     cityText.setText(cityList.getOrNull(Common.lastCityIndex)?.location!!.city!!)
                     temperatureText.setText(Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.temperature).toString() + getResources().getString(R.string.degree_celcius))
                     prepareIcon(iconWeather, cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.icon, "medium")
-                    dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days as ArrayList<DailyWeather.Entry>
+                    var dailyAdapter = DailyWeatherListAdapter(cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days, applicationContext)
+                    listDailyView!!.setAdapter(dailyAdapter)
                     // update graphs
                     graphHandler.updateData(cityList.getOrNull(Common.lastCityIndex)?.weather!!.hourlyWeather)
                 })
@@ -171,16 +176,13 @@ class MainActivity : AppCompatActivity() {
         drawerToggle = setupDrawerToggle()
         mDrawer!!.addDrawerListener(drawerToggle)
 
+        //header menu view
         listView = findViewById(R.id.list)
         val allCities = repository.getCities()
         adapter = HeaderListAdapter(ArrayList(allCities), applicationContext)
         listView!!.adapter = adapter
 
-        var listDailyView = findViewById<RecyclerView>(R.id.recycler_view)
-        var dailyAdapter = DailyWeatherListAdapter(dailyWeatherList, applicationContext)
-        val manager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        listDailyView!!.setLayoutManager(manager)
-        listDailyView!!.setAdapter(dailyAdapter)
+
     }
 
     // This method is called always before activity ends (usually to save activity state)
@@ -203,7 +205,7 @@ class MainActivity : AppCompatActivity() {
     private fun prepareIcon(icon: WebView, weatherIconType: String, iconSize: String) {
         var iconSizeString = String.format("file:///android_asset/%sWeatherImage.html", iconSize)
         icon.settings.javaScriptEnabled = true
-        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)  //disabled hardware acceleration.. strangely, it significantly improves performance
+        icon.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         icon.loadUrl(iconSizeString)
         icon.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
