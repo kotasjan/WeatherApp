@@ -20,10 +20,10 @@
     <string name="no_internet">BRAK INTERNETU</string>
     <string name="no_internet_message">Nie zaaktualizujesz pogody z powodu braku internetu</string>
     <string name="im_sure_that">"Jestem pewny, że "</string>
-    <string name="right_now_is_going_to_rain">"w ciągu najbliższych "</string>
-    <string name="in_string">" "</string>
+    <string name="right_now_is_going_to_rain">" już za chwilę będzie padać "</string>
+    <string name="in_string">" w ciągu "</string>
     <string name="hours_is_going_to_rain">" godzin będzie padać "</string>
-    <string name="so_better_take_umbrella">" dlatego lepiej weź parasolkę."</string>
+    <string name="so_better_take_umbrella">" - dlatego lepiej weź parasolkę."</string>
     <string name="monday">Poniedziałek</string>
     <string name="tuesday">Wtorek</string>
     <string name="wednesday">Środa</string>

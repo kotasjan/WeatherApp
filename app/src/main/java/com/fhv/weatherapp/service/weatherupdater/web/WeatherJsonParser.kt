@@ -2,7 +2,6 @@ package com.fhv.weatherapp.service.weatherupdater.web
 
 import android.util.Log
 import com.fhv.weatherapp.model.*
-import org.joda.time.LocalDate
 import org.joda.time.LocalDateTime
 import org.json.JSONException
 import org.json.JSONObject
@@ -54,7 +53,7 @@ private fun parseHourly(hourly: JSONObject): HourlyWeather {
         for (i in 0 until HOURS) {
             val entry = data.getJSONObject(i)
             val timestamp = entry.getLong("time")
-            val hour = LocalDateTime.fromDateFields(Date(timestamp)).hourOfDay
+            val hour = LocalDateTime.fromDateFields(Date(timestamp * 1000)).hourOfDay
             val probability = entry.getDouble("precipProbability")
             val temperature = entry.getDouble("temperature")
             probabilities.add(HourlyWeather.Entry(i, hour, probability))

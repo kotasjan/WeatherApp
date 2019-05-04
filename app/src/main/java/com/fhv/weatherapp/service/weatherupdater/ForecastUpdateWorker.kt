@@ -8,13 +8,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.fhv.weatherapp.MainActivity
-import com.fhv.weatherapp.common.Common
-import com.fhv.weatherapp.database.CityDatabase
-import com.fhv.weatherapp.database.CityEntity
 import com.fhv.weatherapp.model.City
-import com.fhv.weatherapp.model.CurrentLocation
-import com.fhv.weatherapp.repository.CityRepository
 import com.fhv.weatherapp.service.location.LocationUpdater
+import com.fhv.weatherapp.service.notification.rain.RainNotifier
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequestException
 import com.fhv.weatherapp.service.weatherupdater.web.ForecastRequester
 import com.fhv.weatherapp.service.weatherupdater.web.parseJsonToWeather
@@ -57,9 +53,8 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
                     .get(CityViewModel::class.java)
                     .insert(city)
 
-            // FIXME PIOTR P
-//            Log.d(TAG, "Will send notification if necessary.")
-//            RainNotifier.notifyOfRainIfNecessary(applicationContext, weather)
+            Log.d(TAG, "Will send notification if necessary.")
+            RainNotifier.notifyOfRainIfNecessary(applicationContext, weather)
 
             Result.success()
         } catch (e: ForecastRequestException) {

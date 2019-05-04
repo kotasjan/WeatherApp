@@ -8,11 +8,11 @@ import com.fhv.weatherapp.service.notification.sendNotification
 
 object RainNotifier {
     private val TAG = "RainNotifier"
-    private var condition: Condition = Condition(0.0)
+    private var condition: Condition = Condition(0.10)
 
     init {
-        condition.upsertRainProbabilityThresholdIn(1, 1.0)
-        condition.upsertRainProbabilityThresholdIn(2, 0.0)
+        condition.upsertRainProbabilityThresholdIn(1, 0.20)
+        condition.upsertRainProbabilityThresholdIn(2, 0.40)
 
     }
 
@@ -26,8 +26,8 @@ object RainNotifier {
 
         if (currentRain > condition.getCurrentRainProbabilityThreshold()) {
             rainy = true
-            val percent = currentRain * 100
-            notificationText.append(context.getString(R.string.right_now_is_going_to_rain) + percent.toString())
+            val percent = (currentRain * 100).toInt()
+            notificationText.append(context.getString(R.string.right_now_is_going_to_rain) + "(" + percent.toString() + "%);")
         }
 
         val hourlyRains = weather.hourlyWeather.precipProbabilities
@@ -41,15 +41,15 @@ object RainNotifier {
 
             if (probability > threshold) {
                 rainy = true
-                val percent = currentRain * 100
-                notificationText.append(context.getString(R.string.in_string) + hour.toString() + context.getString(R.string.hours_is_going_to_rain) + percent.toString())
+                val percent = (currentRain * 100).toInt()
+                notificationText.append(context.getString(R.string.in_string) + hour.toString() + context.getString(R.string.hours_is_going_to_rain) + "(" + percent.toString() + "%)")
             }
         }
 
         if (rainy) {
             Log.i(TAG, "Sending rain notification")
             notificationText.append(context.getString(R.string.so_better_take_umbrella))
-            sendNotification(context, "RAIN!", notificationText.toString())
+            sendNotification(context, context.getString(R.string.rain_probability), notificationText.toString())
         }
     }
 
