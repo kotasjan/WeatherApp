@@ -32,12 +32,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                     <include
-                        layout="@layout/daily_weather_card"
+                        layout="@layout/graph_view_weather"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-
                     <include
-                        layout="@layout/graph_view_weather"
+                        layout="@layout/daily_weather_card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>

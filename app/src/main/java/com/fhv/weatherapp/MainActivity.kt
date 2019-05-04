@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                     prepareIcon(iconWeather, cityList.getOrNull(Common.lastCityIndex)?.weather!!.currentWeather.icon, "medium")
                     dailyWeatherList = cityList.getOrNull(Common.lastCityIndex)?.weather!!.dailyWeather.days as ArrayList<DailyWeather.Entry>
                     // update graphs
-                    graphHandler.updateData(city!!.weather!!.hourlyWeather)
+                    graphHandler.updateData(cityList.getOrNull(Common.lastCityIndex)?.weather!!.hourlyWeather)
                 })
 
         val valueAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
