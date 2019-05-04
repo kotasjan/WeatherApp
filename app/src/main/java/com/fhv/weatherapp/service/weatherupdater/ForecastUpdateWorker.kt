@@ -56,6 +56,9 @@ class ForecastUpdateWorker(appContext: Context, workerParams: WorkerParameters)
             Log.d(TAG, "Will send notification if necessary.")
             RainNotifier.notifyOfRainIfNecessary(applicationContext, weather)
 
+            Log.d(TAG, "Dimissing snackbar")
+            MainActivity.hideLoadingSnackbar()
+
             Result.success()
         } catch (e: ForecastRequestException) {
             Log.e(TAG, "Error retrieving forecast")

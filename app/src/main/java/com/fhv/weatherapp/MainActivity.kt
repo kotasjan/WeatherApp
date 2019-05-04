@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
@@ -39,8 +40,9 @@ import com.fhv.weatherapp.service.notification.network.NetworkBroadcastReceiver
 import com.fhv.weatherapp.service.weatherupdater.ForecastUpdater
 import com.fhv.weatherapp.view.graph.ForecastGraphHandler
 import com.fhv.weatherapp.viewmodel.CityViewModel
-import com.google.android.material.navigation.NavigationView
 import com.github.mikephil.charting.charts.BarChart
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.list_view.*
 
 class MainActivity : AppCompatActivity() {
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private var adapter: HeaderListAdapter? = null
     private val broadcastReceiver: BroadcastReceiver = NetworkBroadcastReceiver()
     private var dailyWeatherList: ArrayList<DailyWeather.Entry> = arrayListOf()
+
 
     private lateinit var repository: CityRepository
 
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             askForPermissionsAndUpdateWeather()
         } else {
             ForecastUpdater.startInBackground()
+            showLoadingSnackbar()
         }
 
         /* button.setOnClickListener { ForecastUpdater.updateOnce() } */
@@ -113,8 +117,8 @@ class MainActivity : AppCompatActivity() {
 
         ViewModelProviders.of(this)
                 .get(CityViewModel::class.java)
-                .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>>  { cityList ->
-                    if (cityList.isNullOrEmpty() || cityList.getOrNull(Common.lastCityIndex)?.weather==null) return@Observer
+                .getCities()?.observe(this, androidx.lifecycle.Observer<List<City>> { cityList ->
+                    if (cityList.isNullOrEmpty() || cityList.getOrNull(Common.lastCityIndex)?.weather == null) return@Observer
 
                     temperatureMainView.text = Math.round(cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.temperature!!).toString() + getResources().getString(R.string.degree_celcius)
                     prepareIcon(iconMainView, cityList.getOrNull(Common.lastCityIndex)?.weather?.currentWeather?.icon!!, "large")
@@ -138,8 +142,8 @@ class MainActivity : AppCompatActivity() {
         valueAnimator.interpolator = LinearInterpolator()
         valueAnimator.duration = 9000L
 
-        valueAnimator.addUpdateListener{
-            var progress =  it.animatedValue as Float
+        valueAnimator.addUpdateListener {
+            var progress = it.animatedValue as Float
             var width = summaryMainView.width
             var translationX = width * progress
             summaryMainView.translationX = -translationX
@@ -229,6 +233,7 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION), Common.PERMISSION_REQUEST_ACCESS_COARSE_LOCATION)
         } else {
             ForecastUpdater.updateOnce()
+            showLoadingSnackbar()
         }
     }
 
@@ -239,6 +244,8 @@ class MainActivity : AppCompatActivity() {
             Common.PERMISSION_REQUEST_ACCESS_COARSE_LOCATION -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ForecastUpdater.updateOnce()
+                    showLoadingSnackbar()
+
                 } else {
                     Toast.makeText(this, getString(R.string.perrmision_not_granted), Toast.LENGTH_SHORT).show()
                 }
@@ -246,11 +253,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    companion object ActivityHolder {
-        private var activity : AppCompatActivity? = null
+    private fun showLoadingSnackbar() {
+        snackbar = Snackbar.make(findViewById(R.id.drawer_layout), getString(R.string.loading), Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction("OK") { }
+        snackbar.setActionTextColor(Color.WHITE)
+        snackbar.show()
+    }
 
-        fun getActivity() : AppCompatActivity {
+
+    companion object ActivityHolder {
+        private var activity: AppCompatActivity? = null
+        @SuppressLint("StaticFieldLeak")
+        private lateinit var snackbar: Snackbar
+
+        fun getActivity(): AppCompatActivity {
             return activity!!
+        }
+
+        fun hideLoadingSnackbar() {
+            snackbar.dismiss()
         }
     }
 }

@@ -32,4 +32,7 @@
     <string name="saturday">Sobota</string>
     <string name="sunday">Niedziela</string>
     <string name="no_day">Brak dnia</string>
+    <string name="temperature">Temperatura</string>
+    <string name="rain_probability">Prawdopodobnieństwo opadów</string>
+    <string name="loading">"Ładowanie pogody… Proszę czekać…"</string>
 </resources>

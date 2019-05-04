@@ -34,4 +34,5 @@
     <string name="no_day">No day</string>
     <string name="temperature">Temperature</string>
     <string name="rain_probability">Rain probability</string>
+    <string name="loading">"Loading weather… Please wait…"</string>
 </resources>
