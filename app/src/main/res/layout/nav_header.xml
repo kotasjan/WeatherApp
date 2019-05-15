@@ -26,6 +26,7 @@
         android:id="@+id/icon_header"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:background="@android:color/transparent"
         android:layout_below="@+id/name_of_the_city"/>
 
     <TextView
@@ -37,7 +38,6 @@
         android:layout_marginTop="15dp"
         android:layout_toRightOf="@+id/icon_header"
         android:gravity="center"
-        android:text="26"
         android:textSize="40dp"
         android:textColor="@android:color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

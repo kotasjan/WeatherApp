@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         val cityText = headerLayout.findViewById(R.id.name_of_the_city) as TextView
         val temperatureText = headerLayout.findViewById(R.id.temperature_header) as TextView
         val iconWeather = headerLayout.findViewById(R.id.icon_header) as WebView
+        iconWeather.setBackgroundColor(0)
 
 
         //first card view
